@@ -10,7 +10,9 @@ import static demo.IDownloadProcess.TransitionEnum.Remove;
 import static demo.IDownloadProcess.TransitionEnum.Restart;
 import static demo.IDownloadProcess.TransitionEnum.Resume;
 import static demo.IDownloadProcess.TransitionEnum.Start;
+import static demo.IDownloadProcess.TransitionEnum.Prepare;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +40,7 @@ import demo.IDownloadProcess.StateEnum;
 import demo.IDownloadProcess.TransitionEnum;
 
 @StateMachine(states = @StateSet(StateEnum.class), transitions = @TransitionSet(TransitionEnum.class))
-public interface IDownloadProcess {
+public interface IDownloadProcess extends Serializable {
 
    public static enum TransitionEnum implements ITransition {
       @Recover
@@ -49,7 +51,7 @@ public interface IDownloadProcess {
       Inactivate,
       @Fail
       @Timeout(3000L)
-      Err, Start, Resume, Pause, Finish, Receive,
+      Err, Prepare, Start, Resume, Pause, Finish, Receive,
       @Redo
       @Timeout(3000L)
       Restart, Remove;
@@ -76,10 +78,11 @@ public interface IDownloadProcess {
       Removed(8, true);
 
       static {
-         New.transitionFunction.put(Start, Queued);
+         New.transitionFunction.put(Prepare, Queued);
          New.transitionFunction.put(Remove, Removed);
 
          Queued.transitionFunction.put(Pause, Paused);
+         Queued.transitionFunction.put(Start, Started);
          Queued.transitionFunction.put(Remove, Removed);
          Queued.transitionFunction.put(Inactivate, InactiveQueued);
 
@@ -122,7 +125,7 @@ public interface IDownloadProcess {
       }
 
       private StateEnum(final int seq, final boolean end,
-            final boolean initial) {
+         final boolean initial) {
          this.seq = seq;
          this.end = end;
          this.initial = initial;
@@ -155,6 +158,9 @@ public interface IDownloadProcess {
    void inactivate();
 
    @Transition
+   void prepare();
+   
+   @Transition
    void start();
 
    @Transition
@@ -176,7 +182,7 @@ public interface IDownloadProcess {
    void restart();
 
    @Transition
-   void remove();
+   void remove(boolean both);
 
    StateEnum getState();
 

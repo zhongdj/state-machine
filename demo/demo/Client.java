@@ -2,10 +2,13 @@ package demo;
 
 import com.zuora.core.state.meta.impl.builder.StateMachineMetaDataBuilder;
 
+import demo.DownloadProcess.DownloadRequest;
+
 public class Client {
 
    public static void main(String[] args) {
-      final DownloadProcess process = new DownloadProcess();
+      DownloadRequest r = new DownloadRequest("", "", null);
+      final DownloadProcess process = new DownloadProcess(r,3);
 
 //      InvocationHandler handler = new InvocationHandler() {
 //
@@ -23,6 +26,9 @@ public class Client {
 
       StateMachineMetaDataBuilder builder = new StateMachineMetaDataBuilder();
       builder.build(IDownloadProcess.class);
+      
+      
+      
    }
 
 }
