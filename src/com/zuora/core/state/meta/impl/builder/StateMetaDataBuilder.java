@@ -4,12 +4,12 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 
 import com.zuora.core.state.IState;
-import com.zuora.core.state.annotations.Corrupted;
-import com.zuora.core.state.annotations.End;
-import com.zuora.core.state.annotations.Initial;
-import com.zuora.core.state.annotations.Running;
-import com.zuora.core.state.annotations.Stopped;
-import com.zuora.core.state.annotations.Waiting;
+import com.zuora.core.state.annotations.action.End;
+import com.zuora.core.state.annotations.state.Corrupted;
+import com.zuora.core.state.annotations.state.Initial;
+import com.zuora.core.state.annotations.state.Running;
+import com.zuora.core.state.annotations.state.Stopped;
+import com.zuora.core.state.annotations.state.Waiting;
 import com.zuora.core.state.meta.MetaDataBuilder;
 import com.zuora.core.state.meta.StateMetaData;
 import com.zuora.core.state.meta.StateMetaData.StateTypeEnum;

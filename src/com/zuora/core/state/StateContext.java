@@ -7,7 +7,7 @@ import com.zuora.core.state.annotations.StateMachine;
 import com.zuora.core.state.annotations.StateSet;
 
 
-public final class StateContext<S extends IState, T extends IReactiveObject<S>> implements Serializable, Cloneable{
+public final class StateContext<S extends IState, T extends IReactiveObject<S>> implements Serializable, Cloneable {
 
    private static final long serialVersionUID = 1L;
 

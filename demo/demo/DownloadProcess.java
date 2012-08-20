@@ -82,6 +82,7 @@ public class DownloadProcess implements IDownloadProcess, IReactiveObject<StateE
    private String referenceUrl;
    private String localFileName;
    private long contentLength;
+   
 
    @Override
    public int getId() {

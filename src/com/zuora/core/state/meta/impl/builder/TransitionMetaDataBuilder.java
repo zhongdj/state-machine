@@ -4,10 +4,10 @@ import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 
 import com.zuora.core.state.ITransition;
-import com.zuora.core.state.annotations.Corrupt;
-import com.zuora.core.state.annotations.Recover;
-import com.zuora.core.state.annotations.Redo;
-import com.zuora.core.state.annotations.Timeout;
+import com.zuora.core.state.annotations.action.Corrupt;
+import com.zuora.core.state.annotations.action.Recover;
+import com.zuora.core.state.annotations.action.Redo;
+import com.zuora.core.state.annotations.action.Timeout;
 import com.zuora.core.state.meta.MetaDataBuilder;
 import com.zuora.core.state.meta.TransitionMetaData;
 import com.zuora.core.state.meta.TransitionMetaData.TransitionTypeEnum;

@@ -1,9 +1,9 @@
-package com.zuora.core.state.annotations;
+package com.zuora.core.state.annotations.state;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Corrupt {
+public @interface Corrupted {
 
 }
