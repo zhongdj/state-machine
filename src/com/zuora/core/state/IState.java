@@ -2,13 +2,13 @@ package com.zuora.core.state;
 
 import java.util.Map;
 
-public interface IState {
+public interface IState<R extends IReactiveObject> {
 
    int seq();
 
-   Map<ITransition, IState> getTransitionFunction();
+   Map<? extends ITransition, ? extends IState<R>> getTransitionFunction();
 
-   @SuppressWarnings("rawtypes")
-   IState doStateChange(StateContext context);
+    IState<R> doStateChange(StateContext<R, IState<R>> context);
+//   <S extends IState<R>> S doStateChange(StateContext<R, S> context);
 
 }

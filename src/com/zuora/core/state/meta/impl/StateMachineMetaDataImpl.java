@@ -11,23 +11,23 @@ import com.zuora.core.state.meta.StateMachineMetaData;
 import com.zuora.core.state.meta.StateMetaData;
 import com.zuora.core.state.meta.TransitionMetaData;
 
-public class StateMachineMetaDataImpl<R extends IReactiveObject<S>, S extends IState, T extends ITransition> implements MetaData, StateMachineMetaData<R, S, T> {
+public class StateMachineMetaDataImpl<R extends IReactiveObject, S extends IState<R>, T extends ITransition> implements MetaData, StateMachineMetaData<R, S, T> {
 
    protected Class<R> reactiveObjectClass;
    protected Class<S> stateEnumClass;
    protected Class<T> transitionEnumClass;
 
-   protected StateMetaData initialState;
-   protected final List<StateMetaData> allStates = new ArrayList<StateMetaData>();
-   protected final List<StateMetaData> finalStates = new ArrayList<StateMetaData>();;
-   protected final List<StateMetaData> transientStates = new ArrayList<StateMetaData>();;
+   protected StateMetaData<R> initialState;
+   protected final List<StateMetaData<R>> allStates = new ArrayList<StateMetaData<R>>();
+   protected final List<StateMetaData<R>> finalStates = new ArrayList<StateMetaData<R>>();;
+   protected final List<StateMetaData<R>> transientStates = new ArrayList<StateMetaData<R>>();;
 
    protected final List<TransitionMetaData> allTransitions = new ArrayList<TransitionMetaData>();;
    protected TransitionMetaData corruptTransition;
    protected TransitionMetaData recoverTransition;
    protected TransitionMetaData redoTransition;
 
-   public StateMachineMetaDataImpl(Class<R> reactiveObjectClass, Class<S> stateEnumClass, Class<T> transitionEnumClass, StateMetaData initialState, TransitionMetaData corruptTransition,
+   public StateMachineMetaDataImpl(Class<R> reactiveObjectClass, Class<S> stateEnumClass, Class<T> transitionEnumClass, StateMetaData<R> initialState, TransitionMetaData corruptTransition,
       TransitionMetaData recoverTransition, TransitionMetaData redoTransition) {
       super();
       this.reactiveObjectClass = reactiveObjectClass;
@@ -39,37 +39,22 @@ public class StateMachineMetaDataImpl<R extends IReactiveObject<S>, S extends IS
       this.redoTransition = redoTransition;
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see com.zuora.core.state.meta.IStateMachineMetaData#addFinalState(com.zuora.core.state.meta.impl.StateMetaDataImpl)
-    */
    @Override
-   public void addFinalState(StateMetaData finalState) {
+   public void addFinalState(StateMetaData<R> finalState) {
       this.finalStates.add(finalState);
       addState(finalState);
    }
 
-   private void addState(StateMetaData state) {
+   private void addState(StateMetaData<R> state) {
       this.allStates.add(state);
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see com.zuora.core.state.meta.IStateMachineMetaData#addTransientState(com.zuora.core.state.meta.impl.StateMetaDataImpl)
-    */
    @Override
-   public void addTransientState(StateMetaData state) {
+   public void addTransientState(StateMetaData<R> state) {
       this.transientStates.add(state);
       addState(state);
    }
 
-   /*
-    * (non-Javadoc)
-    * 
-    * @see com.zuora.core.state.meta.IStateMachineMetaData#addTransition(com.zuora.core.state.meta.impl.TransitionMetaDataImpl)
-    */
    @Override
    public void addTransition(TransitionMetaData transition) {
       this.allTransitions.add(transition);

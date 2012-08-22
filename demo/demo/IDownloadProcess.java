@@ -5,18 +5,19 @@ import static demo.IDownloadProcess.TransitionEnum.Err;
 import static demo.IDownloadProcess.TransitionEnum.Finish;
 import static demo.IDownloadProcess.TransitionEnum.Inactivate;
 import static demo.IDownloadProcess.TransitionEnum.Pause;
+import static demo.IDownloadProcess.TransitionEnum.Prepare;
 import static demo.IDownloadProcess.TransitionEnum.Receive;
 import static demo.IDownloadProcess.TransitionEnum.Remove;
 import static demo.IDownloadProcess.TransitionEnum.Restart;
 import static demo.IDownloadProcess.TransitionEnum.Resume;
 import static demo.IDownloadProcess.TransitionEnum.Start;
-import static demo.IDownloadProcess.TransitionEnum.Prepare;
 
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.zuora.core.state.IReactiveObject;
 import com.zuora.core.state.IState;
 import com.zuora.core.state.ITransition;
 import com.zuora.core.state.IllegalStateChangeException;
@@ -40,7 +41,7 @@ import demo.IDownloadProcess.StateEnum;
 import demo.IDownloadProcess.TransitionEnum;
 
 @StateMachine(states = @StateSet(StateEnum.class), transitions = @TransitionSet(TransitionEnum.class))
-public interface IDownloadProcess extends Serializable {
+public interface IDownloadProcess extends Serializable, IReactiveObject {
 
    public static enum TransitionEnum implements ITransition {
       @Recover
@@ -57,7 +58,7 @@ public interface IDownloadProcess extends Serializable {
       Restart, Remove;
    }
 
-   public static enum StateEnum implements IState {
+   public static enum StateEnum implements IState<IDownloadProcess> {
       @Initial
       New(0, false, true),
       @Running
@@ -86,7 +87,7 @@ public interface IDownloadProcess extends Serializable {
          Queued.transitionFunction.put(Remove, Removed);
          Queued.transitionFunction.put(Inactivate, InactiveQueued);
 
-         InactiveQueued.transitionFunction.put(Activate, New);
+         InactiveQueued.transitionFunction.put(Activate, Queued);
          InactiveQueued.transitionFunction.put(Remove, Removed);
 
          Started.transitionFunction.put(Pause, Paused);
@@ -96,7 +97,7 @@ public interface IDownloadProcess extends Serializable {
          Started.transitionFunction.put(Finish, Finished);
          Started.transitionFunction.put(Remove, Removed);
 
-         InactiveStarted.transitionFunction.put(Activate, Started);
+         InactiveStarted.transitionFunction.put(Activate, Queued);
          InactiveStarted.transitionFunction.put(Remove, Removed);
 
          Paused.transitionFunction.put(Resume, New);
@@ -114,7 +115,7 @@ public interface IDownloadProcess extends Serializable {
       final int seq;
       final boolean end;
       final boolean initial;
-      final HashMap<ITransition, IState> transitionFunction = new HashMap<ITransition, IState>();
+      final HashMap<TransitionEnum, StateEnum> transitionFunction = new HashMap<TransitionEnum, StateEnum>();
 
       private StateEnum(final int seq) {
          this(seq, false, false);
@@ -136,12 +137,13 @@ public interface IDownloadProcess extends Serializable {
          return seq;
       }
 
-      public Map<ITransition, IState> getTransitionFunction() {
+      @Override
+      public Map<TransitionEnum, StateEnum> getTransitionFunction() {
          return Collections.unmodifiableMap(transitionFunction);
       }
 
       @Override
-      public IState doStateChange(StateContext context) {
+      public StateEnum doStateChange(StateContext<IDownloadProcess, IState<IDownloadProcess>> context) {
          if (!transitionFunction.containsKey(context.getCurrentState())) {
             throw new IllegalStateChangeException(context);
          }
@@ -151,36 +153,77 @@ public interface IDownloadProcess extends Serializable {
 
    }
 
+   /**
+    * Rebuild lost states from incorrect persisted state and Enqueue
+    */
    @Transition
    void activate();
 
+   /**
+    * Expected Precondition: No resource enlisted
+    * Any enlisted resource should be delisted
+    */
    @Transition
    void inactivate();
 
+   /**
+    * Initialize states and Enqueue
+    */
    @Transition
    void prepare();
-   
+
+   /**
+    * Living thread allocated
+    */
    @Transition
    void start();
 
+   /**
+    * Rebuild states from correct persisted or in-memory state and Enqueue
+    */
    @Transition
    void resume();
 
+   /**
+    * Deallocate Thread resource, Persist correct states
+    */
    @Transition
    void pause();
 
+   /**
+    * Thread die naturally, persist correct states and recycle all resources enlisted.
+    */
    @Transition
    void finish();
 
+   /**
+    * Process aborted unexpected, persist current states and recycle all resources enlisted
+    */
    @Transition
    void err();
 
+   /**
+    * While processing, update working progress.
+    * 
+    * @param bytes
+    *           received
+    */
    @Transition
-   void receive();
+   void receive(long bytes);
 
+   /**
+    * Roll back all information change after create, Re-initialize states and Enqueue
+    */
    @Transition
    void restart();
 
+   /**
+    * Make sure enlisted resource has been delisted if there is, such as
+    * thread, connection, memory, and persisted information and files.
+    * 
+    * @param both
+    *           downloaded file and the download request/task
+    */
    @Transition
    void remove(boolean both);
 

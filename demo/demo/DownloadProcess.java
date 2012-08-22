@@ -12,7 +12,7 @@ import com.zuora.core.state.IReactiveObject;
 
 import demo.IDownloadProcess.StateEnum;
 
-public class DownloadProcess implements IDownloadProcess, IReactiveObject<StateEnum> {
+public class DownloadProcess implements IDownloadProcess, IReactiveObject {
 
    private static final class DemoRunnable implements Runnable {
 
@@ -37,7 +37,7 @@ public class DownloadProcess implements IDownloadProcess, IReactiveObject<StateE
       private static final long serialVersionUID = 6637203548006150257L;
       /* package */long startOffset;
       /* package */long endOffset;
-      /* package */long wroteOffset;
+      /* package */long wroteBytes;
 
       /* package */Segment(long startOffset, long endOffset) {
          super();
@@ -54,13 +54,18 @@ public class DownloadProcess implements IDownloadProcess, IReactiveObject<StateE
       }
 
       public long getWroteOffset() {
-         return wroteOffset;
+         return wroteBytes;
       }
 
-      public void setWroteOffset(long wroteOffset) {
-         this.wroteOffset = wroteOffset;
+      public void writtenBytes(long bytes) {
+         if (startOffset + wroteBytes == endOffset) {
+            throw new IllegalStateException("This segment receiving bytes after been finished");
+         }
+         if (startOffset + wroteBytes > endOffset) {
+            throw new IllegalStateException("Overwrite happened.");
+         }
+         wroteBytes += bytes;
       }
-
    }
 
    public static class DownloadRequest implements Serializable {
@@ -159,7 +164,7 @@ public class DownloadProcess implements IDownloadProcess, IReactiveObject<StateE
    }
 
    @Override
-   public void receive() {
+   public void receive(long bytes) {
 
    }
 

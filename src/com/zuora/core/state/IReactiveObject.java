@@ -1,7 +1,7 @@
 package com.zuora.core.state;
 
-public interface IReactiveObject<S extends IState> {
+public interface IReactiveObject {
 
-   S getState();
-   
+   <S extends IState<? extends IReactiveObject>> S getState();
+
 }

@@ -7,17 +7,17 @@ public class IllegalStateChangeException extends RuntimeException {
    public static final int ILLEAGLE_TRANSITION = 10000;
    public static final int TRANSIT_FROM_FINAL_STATE = 10001;
 
-   private final StateContext context;
+   private final StateContext<?,?> context;
    private final int errorCode;
 
-   public IllegalStateChangeException(StateContext context) {
+   public IllegalStateChangeException(StateContext<?,?> context) {
       this(context, ILLEAGLE_TRANSITION);
    }
 
-   public IllegalStateChangeException(StateContext context, int errorCode) {
+   public IllegalStateChangeException(StateContext<?,?> context, int errorCode) {
 
       try {
-         this.context = (StateContext) context.clone();
+         this.context = (StateContext<?,?>) context.clone();
          this.errorCode = errorCode;
       }
       catch (CloneNotSupportedException e) {
@@ -25,7 +25,7 @@ public class IllegalStateChangeException extends RuntimeException {
       }
    }
 
-   public StateContext getContext() {
+   public StateContext<?,?> getContext() {
       return context;
    }
 

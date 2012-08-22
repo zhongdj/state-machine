@@ -4,7 +4,9 @@ import com.zuora.core.state.annotations.StateMachine;
 
 public class Utils {
 
-	public static Class reactiveInterface(Class reactiveClass) {
+   
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+   public static Class reactiveInterface(Class reactiveClass) {
 		if (reactiveClass.isInterface()) {
 			return reactiveClass;
 		}

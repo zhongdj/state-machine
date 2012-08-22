@@ -3,6 +3,7 @@ package com.zuora.core.state.meta.impl.builder;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
 
+import com.zuora.core.state.IReactiveObject;
 import com.zuora.core.state.IState;
 import com.zuora.core.state.annotations.action.End;
 import com.zuora.core.state.annotations.state.Corrupted;
@@ -15,10 +16,10 @@ import com.zuora.core.state.meta.StateMetaData;
 import com.zuora.core.state.meta.StateMetaData.StateTypeEnum;
 import com.zuora.core.state.meta.impl.StateMetaDataImpl;
 
-public class StateMetaDataBuilder implements MetaDataBuilder<StateMetaData> {
+public class StateMetaDataBuilder<R extends IReactiveObject> implements MetaDataBuilder<StateMetaData<R>> {
 
    @Override
-   public StateMetaData build(AnnotatedElement element) {
+   public StateMetaData<R> build(AnnotatedElement element) {
 
       if (!(element instanceof Field)) {
          throw new IllegalArgumentException("ONLY accept Field type element.");
@@ -51,8 +52,9 @@ public class StateMetaDataBuilder implements MetaDataBuilder<StateMetaData> {
       final Class<?> stateEnumClass = stateField.getDeclaringClass();
 
       try {
-         final IState state = (IState) stateField.get(stateEnumClass);
-         return new StateMetaDataImpl(state, typeEnum) ;
+         @SuppressWarnings("unchecked")
+         final IState<R> state = (IState<R>) stateField.get(stateEnumClass);
+         return new StateMetaDataImpl<R>(state, typeEnum) ;
       }
       catch (Exception ex) {
          throw new IllegalArgumentException("Cannot get value from Enum Class:" + stateEnumClass.getName() + " Field: " + stateField.getName(), ex);
