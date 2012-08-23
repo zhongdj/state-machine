@@ -1,14 +1,15 @@
 package com.zuora.core.state;
 
 import java.util.Map;
+import java.util.Set;
 
-public interface IState<R extends IReactiveObject> {
+public interface IState<R extends IReactiveObject, SELF> {
 
    int seq();
 
-   Map<? extends ITransition, ? extends IState<R>> getTransitionFunction();
+   Map<? extends ITransition, SELF> getTransitionFunction();
 
-    IState<R> doStateChange(StateContext<R, IState<R>> context);
-//   <S extends IState<R>> S doStateChange(StateContext<R, S> context);
+   SELF doStateChange(StateContext<R, SELF> context);
 
+   Set<? extends ITransition> getOutboundTransitions();
 }

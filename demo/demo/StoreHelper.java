@@ -35,7 +35,7 @@ public class StoreHelper {
       }
    }
 
-   public void save(List<IDownloadProcess> list) {
+   public static void save(List<IDownloadProcess> list) {
       final File persistent = new File(DATA_STORE_PATH);
       ObjectOutputStream oos = null;
       try {

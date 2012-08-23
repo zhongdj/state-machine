@@ -9,14 +9,15 @@ import com.zuora.core.state.annotations.action.Recover;
 import com.zuora.core.state.annotations.action.Redo;
 import com.zuora.core.state.annotations.action.Timeout;
 import com.zuora.core.state.meta.MetaDataBuilder;
+import com.zuora.core.state.meta.StateMachineMetaData;
 import com.zuora.core.state.meta.TransitionMetaData;
 import com.zuora.core.state.meta.TransitionMetaData.TransitionTypeEnum;
 import com.zuora.core.state.meta.impl.TransitionMetaDataImpl;
 
-public class TransitionMetaDataBuilder implements MetaDataBuilder<TransitionMetaData> {
+public class TransitionMetaDataBuilder implements MetaDataBuilder<TransitionMetaData, StateMachineMetaData<?, ?, ?>> {
 
    @Override
-   public TransitionMetaData build(AnnotatedElement element) {
+   public TransitionMetaData build(StateMachineMetaData<?, ?, ?> parent, AnnotatedElement element) {
       if (!(element instanceof Field)) {
          throw new IllegalArgumentException("ONLY accept Field type element.");
       }
@@ -50,7 +51,7 @@ public class TransitionMetaDataBuilder implements MetaDataBuilder<TransitionMeta
 
       try {
          final ITransition transition = (ITransition) transitionField.get(transitionEnumClass);
-         return new TransitionMetaDataImpl(type, transition, timeout);
+         return new TransitionMetaDataImpl(parent, type, transition, timeout);
       }
       catch (Exception ex) {
          throw new IllegalArgumentException("Cannot get value from Enum Class:" + transitionEnumClass.getName() + " Field: " + transitionField.getName(), ex);

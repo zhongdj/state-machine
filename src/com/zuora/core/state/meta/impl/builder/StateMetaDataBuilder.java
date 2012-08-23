@@ -12,14 +12,17 @@ import com.zuora.core.state.annotations.state.Running;
 import com.zuora.core.state.annotations.state.Stopped;
 import com.zuora.core.state.annotations.state.Waiting;
 import com.zuora.core.state.meta.MetaDataBuilder;
+import com.zuora.core.state.meta.StateMachineMetaData;
 import com.zuora.core.state.meta.StateMetaData;
 import com.zuora.core.state.meta.StateMetaData.StateTypeEnum;
 import com.zuora.core.state.meta.impl.StateMetaDataImpl;
 
-public class StateMetaDataBuilder<R extends IReactiveObject> implements MetaDataBuilder<StateMetaData<R>> {
+public class StateMetaDataBuilder<R extends IReactiveObject, S extends IState<R, S>> implements MetaDataBuilder<StateMetaData<R, S>, StateMachineMetaData<R, S, ?>> {
 
+   
+   
    @Override
-   public StateMetaData<R> build(AnnotatedElement element) {
+   public StateMetaData<R, S> build(StateMachineMetaData<R, S, ?> parent, AnnotatedElement element) {
 
       if (!(element instanceof Field)) {
          throw new IllegalArgumentException("ONLY accept Field type element.");
@@ -53,8 +56,8 @@ public class StateMetaDataBuilder<R extends IReactiveObject> implements MetaData
 
       try {
          @SuppressWarnings("unchecked")
-         final IState<R> state = (IState<R>) stateField.get(stateEnumClass);
-         return new StateMetaDataImpl<R>(state, typeEnum) ;
+         final S state = (S) stateField.get(stateEnumClass);
+         return new StateMetaDataImpl<R, S>(parent, state, typeEnum);
       }
       catch (Exception ex) {
          throw new IllegalArgumentException("Cannot get value from Enum Class:" + stateEnumClass.getName() + " Field: " + stateField.getName(), ex);

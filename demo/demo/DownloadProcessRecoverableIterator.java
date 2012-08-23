@@ -9,12 +9,18 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.zuora.core.recovery.IRecoverableIterator;
+import com.zuora.core.state.meta.StateMachineMetaData;
+
+import demo.IDownloadProcess.StateEnum;
+import demo.IDownloadProcess.TransitionEnum;
 
 public class DownloadProcessRecoverableIterator implements IRecoverableIterator<IDownloadProcess> {
 
    private final Iterator<IDownloadProcess> iterator;
-
-   private DownloadProcessRecoverableIterator() {
+   private final StateMachineMetaData<IDownloadProcess, StateEnum, TransitionEnum> stateMachineMetaData;
+   
+   public DownloadProcessRecoverableIterator(StateMachineMetaData<IDownloadProcess, StateEnum, TransitionEnum> metaData) {
+      this.stateMachineMetaData = metaData;
       final List<IDownloadProcess> downloads = getSampleProcesses();
       iterator = downloads.iterator();
    }
@@ -25,10 +31,16 @@ public class DownloadProcessRecoverableIterator implements IRecoverableIterator<
       try {
          final File persistent = new File("dataStore");
          System.out.println(persistent.getAbsolutePath());
+         if (!persistent.exists()) {
+            persistent.createNewFile();
+         }
          ois = new ObjectInputStream(new FileInputStream(persistent));
+         List<IDownloadProcess> saved = (List<IDownloadProcess>) ois.readObject();
+         result.addAll(saved);
       }
       catch (Exception e) {
-         throw new IllegalStateException(e);
+         //throw new IllegalStateException(e);
+         return new ArrayList<IDownloadProcess>();
       }
       finally {
          if (null != ois) {

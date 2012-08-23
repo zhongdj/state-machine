@@ -16,6 +16,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import com.zuora.core.state.IReactiveObject;
 import com.zuora.core.state.IState;
@@ -58,7 +59,7 @@ public interface IDownloadProcess extends Serializable, IReactiveObject {
       Restart, Remove;
    }
 
-   public static enum StateEnum implements IState<IDownloadProcess> {
+   public static enum StateEnum implements IState<IDownloadProcess, StateEnum> {
       @Initial
       New(0, false, true),
       @Running
@@ -143,7 +144,7 @@ public interface IDownloadProcess extends Serializable, IReactiveObject {
       }
 
       @Override
-      public StateEnum doStateChange(StateContext<IDownloadProcess, IState<IDownloadProcess>> context) {
+      public StateEnum doStateChange(StateContext<IDownloadProcess, StateEnum> context) {
          if (!transitionFunction.containsKey(context.getCurrentState())) {
             throw new IllegalStateChangeException(context);
          }
@@ -151,6 +152,10 @@ public interface IDownloadProcess extends Serializable, IReactiveObject {
          return transitionFunction.get(context.getCurrentState());
       }
 
+      @Override
+      public Set<TransitionEnum> getOutboundTransitions() {
+         return transitionFunction.keySet();
+      }
    }
 
    /**

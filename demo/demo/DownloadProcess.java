@@ -10,8 +10,6 @@ import java.util.concurrent.ThreadFactory;
 
 import com.zuora.core.state.IReactiveObject;
 
-import demo.IDownloadProcess.StateEnum;
-
 public class DownloadProcess implements IDownloadProcess, IReactiveObject {
 
    private static final class DemoRunnable implements Runnable {
@@ -115,6 +113,7 @@ public class DownloadProcess implements IDownloadProcess, IReactiveObject {
       super();
       this.request = request;
       this.numberOfThreads = numberOfThreads;
+      this.state = StateEnum.Queued;
    }
 
    @Override
@@ -133,7 +132,7 @@ public class DownloadProcess implements IDownloadProcess, IReactiveObject {
 
    @Override
    public void inactivate() {
-
+      System.out.println("inactivate");
    }
 
    @Override

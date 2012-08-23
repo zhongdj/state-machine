@@ -9,6 +9,6 @@ import com.zuora.core.state.IState;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface StateSet {
 
-   Class<? extends IState<? extends IReactiveObject>> value();
+   Class<? extends IState<? extends IReactiveObject, ?>> value();
 
 }

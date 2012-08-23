@@ -3,7 +3,7 @@ package com.zuora.core.state.meta;
 import java.lang.reflect.AnnotatedElement;
 
 
-public interface MetaDataBuilder<MD extends MetaData> {
+public interface MetaDataBuilder<SELF extends MetaData, PARENT extends MetaData> {
 
-   MD build(AnnotatedElement element);
+   SELF build(PARENT parent, AnnotatedElement element);
 }
