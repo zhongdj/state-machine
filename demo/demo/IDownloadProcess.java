@@ -62,9 +62,9 @@ public interface IDownloadProcess extends Serializable, IReactiveObject {
    public static enum StateEnum implements IState<IDownloadProcess, StateEnum> {
       @Initial
       New(0, false, true),
-      @Running
+      @Running(priority=1)
       Queued(1),
-      @Running
+      @Running(priority=0)
       Started(2),
       @Corrupted
       InactiveQueued(3),
