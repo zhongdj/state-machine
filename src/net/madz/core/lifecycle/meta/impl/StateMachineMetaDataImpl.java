@@ -14,6 +14,7 @@ import net.madz.core.lifecycle.IState;
 import net.madz.core.lifecycle.ITransition;
 import net.madz.core.lifecycle.meta.StateMachineMetaData;
 import net.madz.core.lifecycle.meta.StateMetaData;
+import net.madz.core.lifecycle.meta.StateMetaData.StateTypeEnum;
 import net.madz.core.lifecycle.meta.TransitionMetaData;
 import net.madz.core.meta.MetaData;
 import net.madz.core.verification.VerificationFailureSet;
@@ -166,9 +167,25 @@ public class StateMachineMetaDataImpl<R extends IReactiveObject, S extends IStat
 
     @Override
     public void dump(Dumper dumper) {
-	dumper.println(toString()).indent()
+	dumper.println(toString()).indent().print("allStates=")
 		.dump(Collections.unmodifiableList(allStates))
-		.dump(Collections.unmodifiableList(allTransitions));
+		.print("allTransitions=")
+		.dump(Collections.unmodifiableList(allTransitions))
+		.print("initialState=").dump(initialState)
+		.print("allFinalStates=")
+		.dump(Collections.unmodifiableList(finalStates))
+		.print("allTransientStates=")
+		.dump(Collections.unmodifiableList(transientStates))
+		.print("allRunningStates=")
+		.dump(getRunningStateMetaData())
+		.print("allStoppedStates=")
+		.dump(getStoppedStateMetaData())
+		.print("allWaitingStates=")
+		.dump(getWaitingStateMetaData())
+		.print("corruptTransition=").dump(corruptTransition)
+		.print("recoverTransition=").dump(recoverTransition)
+		.print("redoTransition=").dump(recoverTransition);
+
     }
 
     @Override
@@ -193,6 +210,50 @@ public class StateMachineMetaDataImpl<R extends IReactiveObject, S extends IStat
 	}
 	throw new IllegalStateException("Cannot find transition: " + name
 		+ " within stateMachine: " + getDottedPath().getAbsoluteName());
+    }
+
+    @SuppressWarnings("unchecked")
+    public StateMetaData<R, S>[] getRunningStateMetaData() {
+	final ArrayList<StateMetaData<R, S>> result = new ArrayList<StateMetaData<R, S>>();
+	for (StateMetaData<R, S> m : allStates) {
+	    if (StateTypeEnum.Running == m.getType()) {
+		result.add(m);
+	    }
+	}
+	return result.toArray(new StateMetaData[result.size()]);
+    }
+
+    @SuppressWarnings("unchecked")
+    public StateMetaData<R, S>[] getCorruptedStateMetaData() {
+	final ArrayList<StateMetaData<R, S>> result = new ArrayList<StateMetaData<R, S>>();
+	for (StateMetaData<R, S> m : allStates) {
+	    if (StateTypeEnum.Corrupted == m.getType()) {
+		result.add(m);
+	    }
+	}
+	return result.toArray(new StateMetaData[result.size()]);
+    }
+
+    @SuppressWarnings("unchecked")
+    public StateMetaData<R, S>[] getStoppedStateMetaData() {
+	final ArrayList<StateMetaData<R, S>> result = new ArrayList<StateMetaData<R, S>>();
+	for (StateMetaData<R, S> m : allStates) {
+	    if (StateTypeEnum.Stopped == m.getType()) {
+		result.add(m);
+	    }
+	}
+	return result.toArray(new StateMetaData[result.size()]);
+    }
+
+    @SuppressWarnings("unchecked")
+    public StateMetaData<R, S>[] getWaitingStateMetaData() {
+	final ArrayList<StateMetaData<R, S>> result = new ArrayList<StateMetaData<R, S>>();
+	for (StateMetaData<R, S> m : allStates) {
+	    if (StateTypeEnum.Waiting == m.getType()) {
+		result.add(m);
+	    }
+	}
+	return result.toArray(new StateMetaData[result.size()]);
     }
 
 }

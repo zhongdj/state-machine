@@ -59,7 +59,11 @@ public final class Dumper {
 	if (beginningOfLine) {
 	    pw.print(indent);
 	}
-	pw.print(o);
+	if (null == o) {
+	    pw.print("null");
+	} else {
+	    pw.print(o);
+	}
 	beginningOfLine = false;
 	return this;
     }
