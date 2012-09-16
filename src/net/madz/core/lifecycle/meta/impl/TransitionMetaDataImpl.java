@@ -3,10 +3,12 @@ package net.madz.core.lifecycle.meta.impl;
 import java.lang.reflect.Method;
 
 import net.madz.core.common.DottedPath;
+import net.madz.core.common.Dumper;
 import net.madz.core.lifecycle.ITransition;
 import net.madz.core.lifecycle.meta.StateMachineMetaData;
 import net.madz.core.lifecycle.meta.TransitionMetaData;
 import net.madz.core.meta.MetaData;
+import net.madz.core.verification.VerificationFailureSet;
 
 public class TransitionMetaDataImpl implements MetaData, TransitionMetaData {
 
@@ -14,12 +16,15 @@ public class TransitionMetaDataImpl implements MetaData, TransitionMetaData {
     protected final ITransition transition;
     protected final long timeout;
     protected final StateMachineMetaData<?, ?, ?> parent;
+    protected final DottedPath dottedPath;
     protected Method transitionMethod;
 
     public TransitionMetaDataImpl(StateMachineMetaData<?, ?, ?> parent,
-	    TransitionTypeEnum type, ITransition transition, long timeout) {
+	    String name, TransitionTypeEnum type, ITransition transition,
+	    long timeout) {
 	super();
 	this.parent = parent;
+	this.dottedPath = parent.getDottedPath().append(name);
 	this.type = type;
 	this.transition = transition;
 	this.timeout = timeout;
@@ -57,8 +62,25 @@ public class TransitionMetaDataImpl implements MetaData, TransitionMetaData {
 
     @Override
     public DottedPath getDottedPath() {
-	// TODO Auto-generated method stub
-	return null;
+	return dottedPath;
     }
 
+    @Override
+    public void verifyMetaData(VerificationFailureSet verificationSet) {
+    }
+
+    @Override
+    public void dump(Dumper dumper) {
+	dumper.dump(toString());
+    }
+
+    @Override
+    public String toString() {
+	return "TransitionMetaDataImpl [dottedPath=" + dottedPath + ", type="
+		+ type + ", transition=" + transition + ", timeout=" + timeout
+		+ ", transitionMethod=" + transitionMethod + "]";
+    }
+
+
+    
 }

@@ -1,10 +1,13 @@
 package net.madz.core.lifecycle.meta.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
 import net.madz.core.common.DottedPath;
+import net.madz.core.common.Dumper;
+import net.madz.core.common.ParameterString;
 import net.madz.core.lifecycle.IReactiveObject;
 import net.madz.core.lifecycle.IState;
 import net.madz.core.lifecycle.ITransition;
@@ -12,6 +15,7 @@ import net.madz.core.lifecycle.meta.StateMachineMetaData;
 import net.madz.core.lifecycle.meta.StateMetaData;
 import net.madz.core.lifecycle.meta.TransitionMetaData;
 import net.madz.core.meta.MetaData;
+import net.madz.core.verification.VerificationFailureSet;
 
 public class StateMachineMetaDataImpl<R extends IReactiveObject, S extends IState<R, S>, T extends ITransition>
 	implements MetaData, StateMachineMetaData<R, S, T> {
@@ -31,9 +35,21 @@ public class StateMachineMetaDataImpl<R extends IReactiveObject, S extends IStat
     protected TransitionMetaData recoverTransition;
     protected TransitionMetaData redoTransition;
     protected final HashMap<ITransition, TransitionMetaData> transitionIndexMap = new HashMap<ITransition, TransitionMetaData>();
+    protected final MetaData parent;
+    protected final DottedPath dottedPath;
 
-    public StateMachineMetaDataImpl(Class<R> reactiveObjectClass,
-	    Class<S> stateEnumClass) {
+    public StateMachineMetaDataImpl(MetaData parent,
+	    Class<R> reactiveObjectClass, Class<S> stateEnumClass) {
+
+	this.parent = parent;
+
+	if (null == parent) {
+	    this.dottedPath = DottedPath.parse(reactiveObjectClass.getName()
+		    + ".StateMachine");
+	} else {
+	    this.dottedPath = parent.getDottedPath().append(
+		    reactiveObjectClass.getName() + ".StateMachine");
+	}
 	this.reactiveObjectClass = reactiveObjectClass;
 	this.stateEnumClass = stateEnumClass;
     }
@@ -121,12 +137,43 @@ public class StateMachineMetaDataImpl<R extends IReactiveObject, S extends IStat
 
     @Override
     public MetaData getParent() {
-	return null;
+	return parent;
     }
 
     @Override
     public DottedPath getDottedPath() {
-	// TODO Auto-generated method stub
-	return null;
+	return dottedPath;
+    }
+
+    @Override
+    public void verifyMetaData(VerificationFailureSet verificationSet) {
+	for (StateMetaData<R, S> m : allStates) {
+	    m.verifyMetaData(verificationSet);
+	}
+
+	for (TransitionMetaData m : allTransitions) {
+	    m.verifyMetaData(verificationSet);
+	}
+
+    }
+
+    @Override
+    public void dump(Dumper dumper) {
+	dumper.println(toString()).indent()
+		.dump(Collections.unmodifiableList(allStates))
+		.dump(Collections.unmodifiableList(allTransitions));
+    }
+
+    @Override
+    public final String toString() {
+	return toString(new ParameterString(getClass().getSimpleName()))
+		.toString();
+    }
+
+    public ParameterString toString(ParameterString sb) {
+	sb.append("name", this.dottedPath.getAbsoluteName());
+	sb.append("states", this.stateIndexMap);
+	sb.append("transition", this.transitionIndexMap);
+	return sb;
     }
 }

@@ -1,6 +1,7 @@
 package net.madz.core.lifecycle.meta.impl;
 
 import net.madz.core.common.DottedPath;
+import net.madz.core.common.Dumper;
 import net.madz.core.lifecycle.IReactiveObject;
 import net.madz.core.lifecycle.IState;
 import net.madz.core.lifecycle.ITransition;
@@ -9,9 +10,13 @@ import net.madz.core.lifecycle.meta.StateMetaData;
 import net.madz.core.lifecycle.meta.TransitionMetaData;
 import net.madz.core.lifecycle.meta.TransitionMetaData.TransitionTypeEnum;
 import net.madz.core.meta.MetaData;
+import net.madz.core.verification.VerificationException;
+import net.madz.core.verification.VerificationFailureSet;
 
 public class StateMetaDataImpl<R extends IReactiveObject, S extends IState<R, S>>
 	implements MetaData, StateMetaData<R, S> {
+
+    private final DottedPath path;
 
     private final S state;
 
@@ -20,11 +25,12 @@ public class StateMetaDataImpl<R extends IReactiveObject, S extends IState<R, S>
     private final StateMachineMetaData<R, S, ?> parent;
 
     public StateMetaDataImpl(StateMachineMetaData<R, S, ?> parent, S state,
-	    StateTypeEnum type) {
+	    StateTypeEnum type, String name) {
 	super();
 	this.parent = parent;
 	this.state = state;
 	this.type = type;
+	this.path = parent.getDottedPath().append(name);
     }
 
     @Override
@@ -71,7 +77,29 @@ public class StateMetaDataImpl<R extends IReactiveObject, S extends IState<R, S>
 
     @Override
     public DottedPath getDottedPath() {
-	// TODO Auto-generated method stub
-	return null;
+	return path;
     }
+
+    @Override
+    public void verifyMetaData(VerificationFailureSet verificationSet) {
+
+	if (getType() == StateTypeEnum.Running && !containsCorruptTransition()) {
+	    verificationSet.add(new VerificationException(this,
+		    "RunningStateWithoutCorruptTransition",
+		    "Each Running State Must Contains One Corrupt Transition: " + getDottedPath().getAbsoluteName()));
+	}
+
+    }
+
+    @Override
+    public void dump(Dumper dumper) {
+	dumper.dump(toString());
+    }
+
+    @Override
+    public String toString() {
+	return "StateMetaDataImpl [path=" + path + ", state=" + state
+		+ ", type=" + type + "]";
+    }
+
 }

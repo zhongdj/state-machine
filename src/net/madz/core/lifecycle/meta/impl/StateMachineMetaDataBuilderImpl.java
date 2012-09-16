@@ -11,19 +11,28 @@ import net.madz.core.lifecycle.annotations.StateMachine;
 import net.madz.core.lifecycle.annotations.StateSet;
 import net.madz.core.lifecycle.annotations.Transition;
 import net.madz.core.lifecycle.annotations.TransitionSet;
-import net.madz.core.lifecycle.meta.StateMachineMetaDataBuilder;
 import net.madz.core.lifecycle.meta.StateMachineMetaData;
+import net.madz.core.lifecycle.meta.StateMachineMetaDataBuilder;
 import net.madz.core.lifecycle.meta.StateMetaData;
 import net.madz.core.lifecycle.meta.StateMetaDataBuilder;
 import net.madz.core.lifecycle.meta.TransitionMetaData;
 import net.madz.core.meta.MetaData;
+import net.madz.core.meta.impl.MetaDataBuilderBase;
+import net.madz.core.verification.VerificationFailureSet;
 
-public class StateMachineMetaDataBuilderImpl implements
+public class StateMachineMetaDataBuilderImpl extends
+	MetaDataBuilderBase<StateMachineMetaData<?, ?, ?>, MetaData> implements
 	StateMachineMetaDataBuilder {
+
+    private StateMachineMetaDataImpl<?, ?, ?> stateMachineMetaData;
+
+    public StateMachineMetaDataBuilderImpl(MetaData parent, String name) {
+	super(parent, name);
+    }
 
     @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public StateMachineMetaData<?, ?, ?> build(MetaData parent,
+    public synchronized StateMachineMetaData<?, ?, ?> build(MetaData parent,
 	    AnnotatedElement element) {
 	if (!(element instanceof Class)) {
 	    throw new IllegalArgumentException("Should be interface class.");
@@ -40,7 +49,7 @@ public class StateMachineMetaDataBuilderImpl implements
 	final StateSet states = stateMachine.states();
 	Class<? extends IState> stateEnumClass = states.value();
 
-	final StateMachineMetaDataImpl<?, ?, ?> m = new StateMachineMetaDataImpl(
+	stateMachineMetaData = new StateMachineMetaDataImpl(parent, 
 		reactiveObjectClass, stateEnumClass);
 
 	StateMetaData initialState = null;
@@ -53,9 +62,10 @@ public class StateMachineMetaDataBuilderImpl implements
 		continue;
 	    }
 
-	    final StateMetaDataBuilder stateMetaDataBuilder = new StateMetaDataBuilderImpl();
-	    final StateMetaData stateMetaData = stateMetaDataBuilder.build(m,
-		    stateField);
+	    final StateMetaDataBuilder stateMetaDataBuilder = new StateMetaDataBuilderImpl(
+		    stateMachineMetaData, stateField.getName());
+	    final StateMetaData stateMetaData = stateMetaDataBuilder.build(
+		    stateMachineMetaData, stateField);
 	    switch (stateMetaData.getType()) {
 	    case Initial:
 		initialState = stateMetaData;
@@ -70,7 +80,7 @@ public class StateMachineMetaDataBuilderImpl implements
 
 	}
 
-	m.setInitialState(initialState);
+	stateMachineMetaData.setInitialState(initialState);
 
 	TransitionMetaData corruptTransition = null;
 	TransitionMetaData recoverTransition = null;
@@ -87,9 +97,10 @@ public class StateMachineMetaDataBuilderImpl implements
 		continue;
 	    }
 
-	    final TransitionMetaDataBuilderImpl transitionMetaDataBuilder = new TransitionMetaDataBuilderImpl();
+	    final TransitionMetaDataBuilderImpl transitionMetaDataBuilder = new TransitionMetaDataBuilderImpl(
+		    stateMachineMetaData, transitionField.getName());
 	    final TransitionMetaDataImpl transitionMetaData = (TransitionMetaDataImpl) transitionMetaDataBuilder
-		    .build(m, transitionField);
+		    .build(stateMachineMetaData, transitionField);
 
 	    final String transitionName = transitionField.getName();
 	    Method[] methods = reactiveObjectClass.getMethods();
@@ -130,21 +141,27 @@ public class StateMachineMetaDataBuilderImpl implements
 	}
 
 	for (TransitionMetaData transition : transitionList) {
-	    m.addTransition(transition);
+	    stateMachineMetaData.addTransition(transition);
 	}
 
 	for (StateMetaData state : finalStateList) {
-	    m.addFinalState(state);
+	    stateMachineMetaData.addFinalState(state);
 	}
 
 	for (StateMetaData state : transientStateList) {
-	    m.addTransientState(state);
+	    stateMachineMetaData.addTransientState(state);
 	}
 
-	m.setCorruptTransition(corruptTransition);
-	m.setRecoverTransition(recoverTransition);
-	m.setRedoTransition(redoTransition);
+	stateMachineMetaData.setCorruptTransition(corruptTransition);
+	stateMachineMetaData.setRecoverTransition(recoverTransition);
+	stateMachineMetaData.setRedoTransition(redoTransition);
 
-	return m;
+	return stateMachineMetaData;
+    }
+
+    @Override
+    public synchronized void verifyMetaData(
+	    VerificationFailureSet verificationSet) {
+	this.stateMachineMetaData.verifyMetaData(verificationSet);
     }
 }

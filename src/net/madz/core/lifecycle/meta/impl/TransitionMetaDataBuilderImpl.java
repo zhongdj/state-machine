@@ -8,12 +8,21 @@ import net.madz.core.lifecycle.annotations.action.Corrupt;
 import net.madz.core.lifecycle.annotations.action.Recover;
 import net.madz.core.lifecycle.annotations.action.Redo;
 import net.madz.core.lifecycle.annotations.action.Timeout;
-import net.madz.core.lifecycle.meta.TransitionMetaDataBuilder;
 import net.madz.core.lifecycle.meta.StateMachineMetaData;
 import net.madz.core.lifecycle.meta.TransitionMetaData;
 import net.madz.core.lifecycle.meta.TransitionMetaData.TransitionTypeEnum;
+import net.madz.core.lifecycle.meta.TransitionMetaDataBuilder;
+import net.madz.core.meta.impl.MetaDataBuilderBase;
+import net.madz.core.verification.VerificationFailureSet;
 
-public class TransitionMetaDataBuilderImpl implements TransitionMetaDataBuilder {
+public class TransitionMetaDataBuilderImpl extends
+	MetaDataBuilderBase<TransitionMetaData, StateMachineMetaData<?, ?, ?>>
+	implements TransitionMetaDataBuilder {
+
+    protected TransitionMetaDataBuilderImpl(
+	    StateMachineMetaData<?, ?, ?> parent, String name) {
+	super(parent, name);
+    }
 
     @Override
     public TransitionMetaData build(StateMachineMetaData<?, ?, ?> parent,
@@ -51,7 +60,7 @@ public class TransitionMetaDataBuilderImpl implements TransitionMetaDataBuilder 
 	try {
 	    final ITransition transition = (ITransition) transitionField
 		    .get(transitionEnumClass);
-	    return new TransitionMetaDataImpl(parent, type, transition, timeout);
+	    return new TransitionMetaDataImpl(parent, getName(), type, transition, timeout);
 	} catch (Exception ex) {
 	    throw new IllegalArgumentException(
 		    "Cannot get value from Enum Class:"
@@ -59,6 +68,12 @@ public class TransitionMetaDataBuilderImpl implements TransitionMetaDataBuilder 
 			    + transitionField.getName(), ex);
 	}
 
+    }
+
+    @Override
+    public void verifyMetaData(VerificationFailureSet verificationSet) {
+	// TODO Auto-generated method stub
+	
     }
 
 }
