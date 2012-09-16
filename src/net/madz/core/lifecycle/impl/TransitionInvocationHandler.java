@@ -33,6 +33,9 @@ public class TransitionInvocationHandler<R extends IReactiveObject, S extends IS
 
 	final String transitionName;
 	final Transition transition = method.getAnnotation(Transition.class);
+	if (null == transition) {
+	    return method.invoke(reactiveObject, args);
+	}
 	if (Transition.NULL.equals(transition.value())) {
 	    transitionName = StringUtil.toUppercaseFirstCharacter(method
 		    .getName());
@@ -46,12 +49,12 @@ public class TransitionInvocationHandler<R extends IReactiveObject, S extends IS
 		    + stateMetaData.getDottedPath().getName()
 		    + " via Transition: " + transitionName);
 	}
-	S nextState = stateMetaData.nextState(transitionEnum);
 
 	try {
 	    Object result = method.invoke(reactiveObject, args);
 	    return result;
 	} finally {
+	    final S nextState = stateMetaData.nextState(transitionEnum);
             Method stateSetter = reactiveObject.getClass().getDeclaredMethod("setState", new Class[]{nextState.getClass()});
             stateSetter.setAccessible(true);
             stateSetter.invoke(reactiveObject, nextState);
