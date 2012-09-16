@@ -1,4 +1,4 @@
-package net.madz.core.lifecycle.meta.impl.builder;
+package net.madz.core.lifecycle.meta.impl;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
@@ -11,17 +11,17 @@ import net.madz.core.lifecycle.annotations.StateMachine;
 import net.madz.core.lifecycle.annotations.StateSet;
 import net.madz.core.lifecycle.annotations.Transition;
 import net.madz.core.lifecycle.annotations.TransitionSet;
+import net.madz.core.lifecycle.meta.StateMachineMetaDataBuilder;
 import net.madz.core.lifecycle.meta.StateMachineMetaData;
 import net.madz.core.lifecycle.meta.StateMetaData;
+import net.madz.core.lifecycle.meta.StateMetaDataBuilder;
 import net.madz.core.lifecycle.meta.TransitionMetaData;
-import net.madz.core.lifecycle.meta.impl.StateMachineMetaDataImpl;
-import net.madz.core.lifecycle.meta.impl.TransitionMetaDataImpl;
 import net.madz.core.meta.MetaData;
-import net.madz.core.meta.MetaDataBuilder;
 
-public class StateMachineMetaDataBuilder implements
-	MetaDataBuilder<StateMachineMetaData<?, ?, ?>, MetaData> {
+public class StateMachineMetaDataBuilderImpl implements
+	StateMachineMetaDataBuilder {
 
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public StateMachineMetaData<?, ?, ?> build(MetaData parent,
 	    AnnotatedElement element) {
@@ -49,12 +49,11 @@ public class StateMachineMetaDataBuilder implements
 	final ArrayList<StateMetaData<?, ?>> transientStateList = new ArrayList<StateMetaData<?, ?>>();
 	for (Field stateField : stateFields) {
 	    if (!stateEnumClass.isAssignableFrom(stateField.getType())
-	    // || !stateField.isAccessible()
 		    || !Modifier.isStatic(stateField.getModifiers())) {
 		continue;
 	    }
 
-	    final StateMetaDataBuilder stateMetaDataBuilder = new StateMetaDataBuilder();
+	    final StateMetaDataBuilder stateMetaDataBuilder = new StateMetaDataBuilderImpl();
 	    final StateMetaData stateMetaData = stateMetaDataBuilder.build(m,
 		    stateField);
 	    switch (stateMetaData.getType()) {
@@ -88,7 +87,7 @@ public class StateMachineMetaDataBuilder implements
 		continue;
 	    }
 
-	    final TransitionMetaDataBuilder transitionMetaDataBuilder = new TransitionMetaDataBuilder();
+	    final TransitionMetaDataBuilderImpl transitionMetaDataBuilder = new TransitionMetaDataBuilderImpl();
 	    final TransitionMetaDataImpl transitionMetaData = (TransitionMetaDataImpl) transitionMetaDataBuilder
 		    .build(m, transitionField);
 

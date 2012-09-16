@@ -1,4 +1,4 @@
-package net.madz.core.lifecycle.meta.impl.builder;
+package net.madz.core.lifecycle.meta.impl;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
@@ -8,14 +8,12 @@ import net.madz.core.lifecycle.annotations.action.Corrupt;
 import net.madz.core.lifecycle.annotations.action.Recover;
 import net.madz.core.lifecycle.annotations.action.Redo;
 import net.madz.core.lifecycle.annotations.action.Timeout;
+import net.madz.core.lifecycle.meta.TransitionMetaDataBuilder;
 import net.madz.core.lifecycle.meta.StateMachineMetaData;
 import net.madz.core.lifecycle.meta.TransitionMetaData;
 import net.madz.core.lifecycle.meta.TransitionMetaData.TransitionTypeEnum;
-import net.madz.core.lifecycle.meta.impl.TransitionMetaDataImpl;
-import net.madz.core.meta.MetaDataBuilder;
 
-public class TransitionMetaDataBuilder implements
-	MetaDataBuilder<TransitionMetaData, StateMachineMetaData<?, ?, ?>> {
+public class TransitionMetaDataBuilderImpl implements TransitionMetaDataBuilder {
 
     @Override
     public TransitionMetaData build(StateMachineMetaData<?, ?, ?> parent,

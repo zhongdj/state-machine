@@ -1,4 +1,4 @@
-package net.madz.core.lifecycle.meta.impl.builder;
+package net.madz.core.lifecycle.meta.impl;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
@@ -13,13 +13,11 @@ import net.madz.core.lifecycle.annotations.state.Stopped;
 import net.madz.core.lifecycle.annotations.state.Waiting;
 import net.madz.core.lifecycle.meta.StateMachineMetaData;
 import net.madz.core.lifecycle.meta.StateMetaData;
+import net.madz.core.lifecycle.meta.StateMetaDataBuilder;
 import net.madz.core.lifecycle.meta.StateMetaData.StateTypeEnum;
-import net.madz.core.lifecycle.meta.impl.StateMetaDataImpl;
-import net.madz.core.meta.MetaDataBuilder;
 
-public class StateMetaDataBuilder<R extends IReactiveObject, S extends IState<R, S>>
-	implements
-	MetaDataBuilder<StateMetaData<R, S>, StateMachineMetaData<R, S, ?>> {
+public class StateMetaDataBuilderImpl<R extends IReactiveObject, S extends IState<R, S>>
+	implements StateMetaDataBuilder<R, S> {
 
     @Override
     public StateMetaData<R, S> build(StateMachineMetaData<R, S, ?> parent,

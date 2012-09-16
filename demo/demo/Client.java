@@ -7,7 +7,7 @@ import java.util.List;
 import net.madz.core.lifecycle.meta.StateMachineMetaData;
 import net.madz.core.lifecycle.meta.StateMetaData;
 import net.madz.core.lifecycle.meta.TransitionMetaData;
-import net.madz.core.lifecycle.meta.impl.builder.StateMachineMetaDataBuilder;
+import net.madz.core.lifecycle.meta.impl.StateMachineMetaDataBuilderImpl;
 import demo.DownloadProcess.DownloadRequest;
 import demo.IDownloadProcess.StateEnum;
 import demo.IDownloadProcess.TransitionEnum;
@@ -21,7 +21,7 @@ public class Client {
 	list.add(process);
 	StoreHelper.save(list);
 
-	final StateMachineMetaDataBuilder builder = new StateMachineMetaDataBuilder();
+	final StateMachineMetaDataBuilderImpl builder = new StateMachineMetaDataBuilderImpl();
 	final StateMachineMetaData<IDownloadProcess, StateEnum, TransitionEnum> machineMetaData = (StateMachineMetaData<IDownloadProcess, StateEnum, TransitionEnum>) builder
 		.build(null, IDownloadProcess.class);
 

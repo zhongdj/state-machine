@@ -1,4 +1,4 @@
-package net.madz.core.lifecycle;
+package net.madz.core.lifecycle.impl;
 
 import net.madz.core.event.ILifeCycleEventListenter;
 import net.madz.core.event.LifecycleEvent;
