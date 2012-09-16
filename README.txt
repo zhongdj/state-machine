@@ -11,5 +11,5 @@ A well defined life cycle will help to build a strong life, which brings benifit
 
 Life cycle design activity is the basis of programming and modeling, and UML has state diagram to describe a state machine of a reactive object.
 
-This project is going to componentize the "life cycle" management and connect the modeling behavior with programming behavior at application framework level support.
+This project is going to componentize the "life cycle" management and connect the modeling behavior with programming behavior at application framework level support with meta-driven style.
 
