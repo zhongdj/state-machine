@@ -2,7 +2,8 @@ package net.madz.core.lifecycle;
 
 import java.io.Serializable;
 
-public final class StateContext<R extends IReactiveObject, S> implements
+@SuppressWarnings("rawtypes")
+public final class StateContext<R extends IReactiveObject, S extends IState> implements
 	Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;

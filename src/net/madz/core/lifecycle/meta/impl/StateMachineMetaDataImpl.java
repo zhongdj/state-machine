@@ -1,5 +1,6 @@
 package net.madz.core.lifecycle.meta.impl;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,6 +61,12 @@ public class StateMachineMetaDataImpl<R extends IReactiveObject, S extends IStat
 
     public void setTransitionEnumClass(Class<T> transitionEnumClass) {
 	this.transitionEnumClass = transitionEnumClass;
+    }
+
+    @SuppressWarnings("unchecked")
+    public T getTranstion(String name) throws Exception {
+	Field enumField = transitionEnumClass.getField(name);
+	return (T) enumField.get(transitionEnumClass);
     }
 
     @Override
@@ -176,4 +183,16 @@ public class StateMachineMetaDataImpl<R extends IReactiveObject, S extends IStat
 	sb.append("transition", this.transitionIndexMap);
 	return sb;
     }
+
+    @Override
+    public T getTransition(String name) {
+	for (TransitionMetaData t : allTransitions) {
+	    if (t.getDottedPath().getName().equals(name)) {
+		return t.getTransition();
+	    }
+	}
+	throw new IllegalStateException("Cannot find transition: " + name
+		+ " within stateMachine: " + getDottedPath().getAbsoluteName());
+    }
+
 }

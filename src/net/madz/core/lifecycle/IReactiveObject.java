@@ -14,6 +14,7 @@ package net.madz.core.lifecycle;
  */
 public interface IReactiveObject {
 
-    <S> S getState();
+    @SuppressWarnings("rawtypes")
+    <S extends IState> S getState();
 
 }

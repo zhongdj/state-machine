@@ -114,7 +114,7 @@ public class DownloadProcess implements IDownloadProcess, IReactiveObject {
 	super();
 	this.request = request;
 	this.numberOfThreads = numberOfThreads;
-	this.state = StateEnum.Queued;
+	this.state = StateEnum.New;
     }
 
     @Override

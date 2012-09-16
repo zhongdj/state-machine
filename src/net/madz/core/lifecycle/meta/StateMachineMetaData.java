@@ -17,6 +17,8 @@ public interface StateMachineMetaData<R extends IReactiveObject, S extends IStat
 
     StateMetaData<R, S> getStateMetaData(S state);
 
+    T getTransition(String name);
+
     TransitionMetaData getTransitionMetaData(ITransition transition);
 
     TransitionMetaData getRedoTransition();

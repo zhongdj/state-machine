@@ -20,7 +20,8 @@ import java.util.Set;
  * @param <R>
  * @param <SELF>
  */
-public interface IState<R extends IReactiveObject, SELF> {
+@SuppressWarnings("rawtypes")
+public interface IState<R extends IReactiveObject, SELF extends IState> {
 
     int seq();
 

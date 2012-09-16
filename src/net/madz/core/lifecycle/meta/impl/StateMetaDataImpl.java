@@ -24,7 +24,8 @@ public class StateMetaDataImpl<R extends IReactiveObject, S extends IState<R, S>
 
     private final StateMachineMetaData<R, S, ?> parent;
 
-    public StateMetaDataImpl(StateMachineMetaData<R, S, ?> parent, S state,
+    public StateMetaDataImpl(
+	    StateMachineMetaData<R, S, ? extends ITransition> parent, S state,
 	    StateTypeEnum type, String name) {
 	super();
 	this.parent = parent;
@@ -55,7 +56,8 @@ public class StateMetaDataImpl<R extends IReactiveObject, S extends IState<R, S>
 
     @Override
     public boolean containsCorruptTransition() {
-	return false;
+	ITransition transition = parent.getCorruptTransition().getTransition();
+	return !illegalTransition(transition);
     }
 
     @Override
@@ -86,7 +88,8 @@ public class StateMetaDataImpl<R extends IReactiveObject, S extends IState<R, S>
 	if (getType() == StateTypeEnum.Running && !containsCorruptTransition()) {
 	    verificationSet.add(new VerificationException(this,
 		    "RunningStateWithoutCorruptTransition",
-		    "Each Running State Must Contains One Corrupt Transition: " + getDottedPath().getAbsoluteName()));
+		    "Each Running State Must Contains One Corrupt Transition: "
+			    + getDottedPath().getAbsoluteName()));
 	}
 
     }
