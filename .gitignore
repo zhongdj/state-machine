@@ -10,3 +10,5 @@ bin/net/madz/core/.DS_Store
 bin/net/madz/core/lifecycle/.DS_Store
 
 bin/net/madz/core/lifecycle/meta/.DS_Store
+
+*.svn-base
