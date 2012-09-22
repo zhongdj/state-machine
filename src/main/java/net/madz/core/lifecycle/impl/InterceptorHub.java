@@ -11,25 +11,22 @@ public class InterceptorHub {
 
     private ArrayList<IStateChangeInterceptor> interceptors = new ArrayList<IStateChangeInterceptor>();
 
-    public synchronized void registerInterceptor(
-	    IStateChangeInterceptor interceptor) {
-	if (interceptors.contains(interceptor)) {
-	    return;
-	} else {
-	    interceptors.add(interceptor);
-	}
+    public synchronized void registerInterceptor(IStateChangeInterceptor interceptor) {
+        if (interceptors.contains(interceptor)) {
+            return;
+        } else {
+            interceptors.add(interceptor);
+        }
     }
 
-    public synchronized void removeInterceptor(
-	    IStateChangeInterceptor interceptor) {
-	interceptors.remove(interceptor);
+    public synchronized void removeInterceptor(IStateChangeInterceptor interceptor) {
+        interceptors.remove(interceptor);
     }
 
     public void intercept(StateContext<?, ?> context) {
-	final ArrayList<IStateChangeInterceptor> imageList = new ArrayList<IStateChangeInterceptor>(
-		interceptors);
-	for (IStateChangeInterceptor interceptor : imageList) {
-	    interceptor.interceptStateChange(context);
-	}
+        final ArrayList<IStateChangeInterceptor> imageList = new ArrayList<IStateChangeInterceptor>(interceptors);
+        for (IStateChangeInterceptor interceptor : imageList) {
+            interceptor.interceptStateChange(context);
+        }
     }
 }

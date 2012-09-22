@@ -15,36 +15,33 @@ import net.madz.core.util.json.io.JsonWriter;
 /**
  * Collection of VerificationFailures for a meta object.
  */
-public class VerificationFailureSet implements Iterable<VerificationFailure>,
-	Dumpable, Cloneable {
+public class VerificationFailureSet implements Iterable<VerificationFailure>, Dumpable, Cloneable {
     @SuppressWarnings("unchecked")
-    public final static VerificationFailureSet NULL_SET = new VerificationFailureSet(
-	    (Set<VerificationFailure>) Collections.EMPTY_SET);
+    public final static VerificationFailureSet NULL_SET = new VerificationFailureSet((Set<VerificationFailure>) Collections.EMPTY_SET);
     private final static long serialVersionUID = 1L;
     private final Set<VerificationFailure> failureSet;
 
     private VerificationFailureSet(Set<VerificationFailure> failureSet) {
-	this.failureSet = failureSet;
+        this.failureSet = failureSet;
     }
 
     /**
      * Constructor
      */
     public VerificationFailureSet() {
-	failureSet = new LinkedHashSet<VerificationFailure>();
+        failureSet = new LinkedHashSet<VerificationFailure>();
     }
 
     @Override
     public VerificationFailureSet clone() {
-	return new VerificationFailureSet(
-		new LinkedHashSet<VerificationFailure>(this.failureSet));
+        return new VerificationFailureSet(new LinkedHashSet<VerificationFailure>(this.failureSet));
     }
 
     /**
      * Remove all failures from the failure set
      */
     public void clear() {
-	failureSet.clear();
+        failureSet.clear();
     }
 
     /**
@@ -59,11 +56,9 @@ public class VerificationFailureSet implements Iterable<VerificationFailure>,
      * @param details
      *            Message error parameters
      */
-    public VerificationFailureSet add(Object source, String errorKey,
-	    String defaultErrorMessage, Object... details) {
-	add(new VerificationFailure(source, errorKey, defaultErrorMessage,
-		details));
-	return this;
+    public VerificationFailureSet add(Object source, String errorKey, String defaultErrorMessage, Object... details) {
+        add(new VerificationFailure(source, errorKey, defaultErrorMessage, details));
+        return this;
     }
 
     /**
@@ -78,11 +73,9 @@ public class VerificationFailureSet implements Iterable<VerificationFailure>,
      * @param details
      *            Message error parameters
      */
-    public VerificationFailureSet add(Throwable e, Object source,
-	    String errorKey, String defaultErrorMessage, Object... details) {
-	add(new VerificationFailure(e, source, errorKey, defaultErrorMessage,
-		details));
-	return this;
+    public VerificationFailureSet add(Throwable e, Object source, String errorKey, String defaultErrorMessage, Object... details) {
+        add(new VerificationFailure(e, source, errorKey, defaultErrorMessage, details));
+        return this;
     }
 
     /**
@@ -93,35 +86,35 @@ public class VerificationFailureSet implements Iterable<VerificationFailure>,
      * @return this set
      */
     public VerificationFailureSet add(VerificationFailure failure) {
-	failureSet.add(failure);
-	return this;
+        failureSet.add(failure);
+        return this;
     }
 
     /**
      * Add verification failures from the exception to this set
      */
     public VerificationFailureSet add(VerificationException failure) {
-	return addAll(failure.getVerificationFailureSet());
+        return addAll(failure.getVerificationFailureSet());
     }
 
     /**
      * Add verification failures from the exception to this set
      */
     public VerificationFailureSet add(VerificationRuntimeException failure) {
-	return addAll(failure.getVerificationFailureSet());
+        return addAll(failure.getVerificationFailureSet());
     }
 
     /**
      * Add verification failures from the set to this set
      */
     public VerificationFailureSet addAll(VerificationFailureSet set) {
-	this.failureSet.addAll(set.failureSet);
-	return this;
+        this.failureSet.addAll(set.failureSet);
+        return this;
     }
 
     @Override
     public Iterator<VerificationFailure> iterator() {
-	return failureSet.iterator();
+        return failureSet.iterator();
     }
 
     /**
@@ -131,9 +124,9 @@ public class VerificationFailureSet implements Iterable<VerificationFailure>,
      * @throws VerificationException
      */
     public void assertNoFailures() throws VerificationException {
-	if (size() > 0) {
-	    throw new VerificationException(this);
-	}
+        if (size() > 0) {
+            throw new VerificationException(this);
+        }
     }
 
     /**
@@ -143,23 +136,23 @@ public class VerificationFailureSet implements Iterable<VerificationFailure>,
      * @throws VerificationRuntimeException
      */
     public void throwRuntimeException() {
-	if (size() > 0) {
-	    throw new VerificationRuntimeException(this);
-	}
+        if (size() > 0) {
+            throw new VerificationRuntimeException(this);
+        }
     }
 
     /**
      * Number of verification failures in this set
      */
     public int size() {
-	return this.failureSet.size();
+        return this.failureSet.size();
     }
 
     /**
      * Does this verification set contain any verification failures?
      */
     public boolean hasVerificationFailures() {
-	return !this.failureSet.isEmpty();
+        return !this.failureSet.isEmpty();
     }
 
     /**
@@ -167,17 +160,17 @@ public class VerificationFailureSet implements Iterable<VerificationFailure>,
      * set the exception message
      */
     String getMessage() {
-	return StringUtil.toString(failureSet, ", ");
+        return StringUtil.toString(failureSet, ", ");
     }
 
     @Override
     public String toString() {
-	ParameterString sb = new ParameterString(getClass().getSimpleName());
-	for (VerificationFailure failure : this.failureSet) {
-	    sb.append(failure.getErrorKey());
-	}
+        ParameterString sb = new ParameterString(getClass().getSimpleName());
+        for (VerificationFailure failure : this.failureSet) {
+            sb.append(failure.getErrorKey());
+        }
 
-	return sb.toString();
+        return sb.toString();
     }
 
     /**
@@ -185,28 +178,28 @@ public class VerificationFailureSet implements Iterable<VerificationFailure>,
      * if it is.
      */
     public final static VerificationFailureSet get(VerificationFailureSet set) {
-	if (null == set || NULL_SET == set) {
-	    set = new VerificationFailureSet();
-	}
-	return set;
+        if (null == set || NULL_SET == set) {
+            set = new VerificationFailureSet();
+        }
+        return set;
     }
 
     @Override
     public void dump(Dumper dumper) {
-	for (VerificationFailure failure : this.failureSet) {
-	    failure.dump(dumper);
-	}
+        for (VerificationFailure failure : this.failureSet) {
+            failure.dump(dumper);
+        }
     }
 
     public void writeJson(JsonWriter writer) throws IOException {
-	writer.startAnonymousArray("Errors");
-	try {
-	    for (VerificationFailure failure : this.failureSet) {
-		failure.writeJson(writer);
-	    }
-	} finally {
-	    writer.endArray();
-	}
+        writer.startAnonymousArray("Errors");
+        try {
+            for (VerificationFailure failure : this.failureSet) {
+                failure.writeJson(writer);
+            }
+        } finally {
+            writer.endArray();
+        }
     }
 
 }

@@ -14,40 +14,37 @@ public class DottedPath implements Iterable<DottedPath> {
     private final String name, absoluteName;
 
     private DottedPath(DottedPath parent, String name) {
-	this.parent = parent;
-	this.name = name;
-	this.absoluteName = this.parent != null ? this.parent.absoluteName
-		+ "." + this.name : this.name;
+        this.parent = parent;
+        this.name = name;
+        this.absoluteName = this.parent != null ? this.parent.absoluteName + "." + this.name : this.name;
     }
 
     /** Constructor */
     public DottedPath(String name) {
-	this(null, name);
+        this(null, name);
     }
 
     public static DottedPath parse(String path) {
-	List<String> segments = Arrays.asList(path.split("\\."));
-	DottedPath head = new DottedPath(segments.get(0));
-	List<String> tail = segments.subList(1, segments.size());
-	return head.append(tail);
+        List<String> segments = Arrays.asList(path.split("\\."));
+        DottedPath head = new DottedPath(segments.get(0));
+        List<String> tail = segments.subList(1, segments.size());
+        return head.append(tail);
     }
 
     public static DottedPath append(DottedPath parent, String segment) {
-	return parent != null ? parent.append(segment)
-		: new DottedPath(segment);
+        return parent != null ? parent.append(segment) : new DottedPath(segment);
     }
 
     public DottedPath append(String segment) {
-	return new DottedPath(this, segment);
+        return new DottedPath(this, segment);
     }
 
     public DottedPath append(List<String> segments) {
-	if (segments.isEmpty()) {
-	    return this;
-	}
+        if (segments.isEmpty()) {
+            return this;
+        }
 
-	return this.append(segments.get(0)).append(
-		segments.subList(1, segments.size()));
+        return this.append(segments.get(0)).append(segments.subList(1, segments.size()));
     }
 
     // /** Recursive constructor used to build chain */
@@ -76,48 +73,47 @@ public class DottedPath implements Iterable<DottedPath> {
 
     @Override
     public boolean equals(Object obj) {
-	return (obj instanceof DottedPath)
-		&& ((DottedPath) obj).absoluteName.equals(this.absoluteName);
+        return (obj instanceof DottedPath) && ((DottedPath) obj).absoluteName.equals(this.absoluteName);
     }
 
     @Override
     public int hashCode() {
-	return this.absoluteName.hashCode();
+        return this.absoluteName.hashCode();
     }
 
     /**
      * Number of elements from the head element to this element
      */
     public int size() {
-	return parent != null ? parent.size() + 1 : 1;
+        return parent != null ? parent.size() + 1 : 1;
     }
 
     public List<String> toSegmentList() {
-	List<String> segmentList = new LinkedList<String>();
-	for (DottedPath current = this; current != null; current = current.parent) {
-	    segmentList.add(0, current.name);
-	}
-	return segmentList;
+        List<String> segmentList = new LinkedList<String>();
+        for (DottedPath current = this; current != null; current = current.parent) {
+            segmentList.add(0, current.name);
+        }
+        return segmentList;
     }
 
     public List<DottedPath> toList() {
-	List<DottedPath> list = new LinkedList<DottedPath>();
-	for (DottedPath current = this; current != null; current = current.parent) {
-	    list.add(0, current);
-	}
-	return list;
+        List<DottedPath> list = new LinkedList<DottedPath>();
+        for (DottedPath current = this; current != null; current = current.parent) {
+            list.add(0, current);
+        }
+        return list;
     }
 
     @Override
     public Iterator<DottedPath> iterator() {
-	return toList().iterator();
+        return toList().iterator();
     }
 
     /**
      * Parent element in path
      */
     public DottedPath getParent() {
-	return this.parent;
+        return this.parent;
     }
 
     /**
@@ -126,14 +122,14 @@ public class DottedPath implements Iterable<DottedPath> {
      * @return getParent().getAbsoluteName() + "." + getName();
      */
     public String getAbsoluteName() {
-	return this.absoluteName;
+        return this.absoluteName;
     }
 
     /**
      * Local name of this element
      */
     public String getName() {
-	return this.name;
+        return this.name;
     }
 
     /**
@@ -147,24 +143,24 @@ public class DottedPath implements Iterable<DottedPath> {
      * @return StringBuilder passed in or created
      */
     public StringBuilder toString(StringBuilder sb, final String separator) {
-	if (null == sb) {
-	    int size = 0;
-	    for (DottedPath path = this; path != null; path = path.parent) {
-		if (path != this) {
-		    size += separator.length();
-		}
-		size += path.name.length();
-	    }
+        if (null == sb) {
+            int size = 0;
+            for (DottedPath path = this; path != null; path = path.parent) {
+                if (path != this) {
+                    size += separator.length();
+                }
+                size += path.name.length();
+            }
 
-	    sb = new StringBuilder(size);
-	}
+            sb = new StringBuilder(size);
+        }
 
-	if (null != this.parent) {
-	    this.parent.toString(sb, separator);
-	    sb.append(separator);
-	}
-	sb.append(this.name);
-	return sb;
+        if (null != this.parent) {
+            this.parent.toString(sb, separator);
+            sb.append(separator);
+        }
+        sb.append(this.name);
+        return sb;
     }
 
     /**
@@ -172,7 +168,7 @@ public class DottedPath implements Iterable<DottedPath> {
      */
     @Override
     public String toString() {
-	return this.absoluteName;
+        return this.absoluteName;
     }
 
 }

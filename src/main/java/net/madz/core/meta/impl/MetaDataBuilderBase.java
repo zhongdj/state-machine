@@ -12,8 +12,7 @@ import net.madz.core.meta.KeySet;
 import net.madz.core.meta.MetaData;
 import net.madz.core.meta.MetaDataBuilder;
 
-public abstract class MetaDataBuilderBase<SELF extends MetaData, PARENT extends MetaData>
-	implements MetaData, MetaDataBuilder<SELF, PARENT>, Flavored {
+public abstract class MetaDataBuilderBase<SELF extends MetaData, PARENT extends MetaData> implements MetaData, MetaDataBuilder<SELF, PARENT>, Flavored {
     protected Class<?> containerType;
     protected final KeySet.Builder keySet;
     protected final MetaDataMap.Builder flavorMap;
@@ -22,69 +21,68 @@ public abstract class MetaDataBuilderBase<SELF extends MetaData, PARENT extends 
     protected final DottedPath path;
 
     protected MetaDataBuilderBase(PARENT parent, String name) {
-	@SuppressWarnings("unchecked")
-	final SELF self = (SELF) this;
+        @SuppressWarnings("unchecked")
+        final SELF self = (SELF) this;
 
-	if (null == this.parent) {
-	    this.parent = null;
-	    this.path = DottedPath.parse(name);
-	} else {
-	    this.parent = parent;
-	    this.path = parent.getDottedPath().append(name);
-	}
-	this.keySet = new KeySet.Builder(3);
-	this.flavorMap = new MetaDataMap.Builder(self, 3);
+        if (null == this.parent) {
+            this.parent = null;
+            this.path = DottedPath.parse(name);
+        } else {
+            this.parent = parent;
+            this.path = parent.getDottedPath().append(name);
+        }
+        this.keySet = new KeySet.Builder(3);
+        this.flavorMap = new MetaDataMap.Builder(self, 3);
 
-	addKey(this.path.getName());
-	addKey(this.path.getAbsoluteName());
+        addKey(this.path.getName());
+        addKey(this.path.getAbsoluteName());
     }
 
     @Override
     public DottedPath getDottedPath() {
-	return this.path;
+        return this.path;
     }
 
     @Override
     public void addFlavor(FlavorMetaData<? super SELF> flavor) {
-	if (null != flavor) {
-	    flavorMap.add(flavor);
-	}
+        if (null != flavor) {
+            flavorMap.add(flavor);
+        }
     }
 
     @Override
     public void removeFlavor(Object flavor) {
-	this.flavorMap.deepRemove(flavor);
+        this.flavorMap.deepRemove(flavor);
     }
 
     @Override
     public void addKey(Object key) {
-	this.keySet.addKey(key);
+        this.keySet.addKey(key);
     }
 
     @Override
     public void addKeys(KeySet keySet) {
-	this.keySet.addKeys(keySet);
+        this.keySet.addKeys(keySet);
     }
 
     @Override
     public <F> F getFlavor(Class<F> flavorInterface, boolean assertExists) {
-	final Object flavor = getFlavorMetaData(flavorInterface, assertExists);
-	if (flavor instanceof FlavorFactory) {
-	    return flavorInterface.cast(((FlavorFactory) flavor).getFlavor(
-		    flavorInterface, this));
-	} else if (flavorInterface.isInstance(flavor)) {
-	    return flavorInterface.cast(flavor);
-	}
+        final Object flavor = getFlavorMetaData(flavorInterface, assertExists);
+        if (flavor instanceof FlavorFactory) {
+            return flavorInterface.cast(((FlavorFactory) flavor).getFlavor(flavorInterface, this));
+        } else if (flavorInterface.isInstance(flavor)) {
+            return flavorInterface.cast(flavor);
+        }
 
-	if (null != flavor || assertExists) {
-	    throw new FlavorNotSupportedException(this, flavorInterface);
-	}
-	return null;
+        if (null != flavor || assertExists) {
+            throw new FlavorNotSupportedException(this, flavorInterface);
+        }
+        return null;
     }
 
     @Override
     public boolean hasFlavor(Class<?> flavorInterface) {
-	return this.flavorMap.hasKey(flavorInterface);
+        return this.flavorMap.hasKey(flavorInterface);
     }
 
     /**
@@ -92,33 +90,33 @@ public abstract class MetaDataBuilderBase<SELF extends MetaData, PARENT extends 
      */
     @Override
     public void handleError(Throwable e) {
-	MetaDataError<?> metaError = getFlavor(MetaDataError.class, false);
-	if (null == metaError) {
-	    MetaDataError<SELF> newMetaError = new MetaDataError<SELF>();
-	    addFlavor(newMetaError);
-	    metaError = newMetaError;
-	}
+        MetaDataError<?> metaError = getFlavor(MetaDataError.class, false);
+        if (null == metaError) {
+            MetaDataError<SELF> newMetaError = new MetaDataError<SELF>();
+            addFlavor(newMetaError);
+            metaError = newMetaError;
+        }
 
-	metaError.addError(e);
+        metaError.addError(e);
     }
 
     @Override
     public PARENT getParent() {
-	return this.parent;
+        return this.parent;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public SELF getMetaData() {
-	return (SELF) this;
+        return (SELF) this;
     }
 
     public Object getFlavorMetaData(Object key, boolean assertExists) {
-	final Object flavorMetaData = this.flavorMap.get(key);
-	if (null == flavorMetaData && assertExists) {
-	    throw new FlavorNotSupportedException(this, key);
-	}
-	return flavorMetaData;
+        final Object flavorMetaData = this.flavorMap.get(key);
+        if (null == flavorMetaData && assertExists) {
+            throw new FlavorNotSupportedException(this, key);
+        }
+        return flavorMetaData;
     }
 
     /**
@@ -131,46 +129,45 @@ public abstract class MetaDataBuilderBase<SELF extends MetaData, PARENT extends 
      * </p>
      */
     public <F> void setProperty(Class<F> propertyKey, F flavor) {
-	properties.put(propertyKey, flavor);
+        properties.put(propertyKey, flavor);
     }
 
     /**
      * Get a build property.
      */
     public <F> F getProperty(Class<F> propertyKey) {
-	return propertyKey.cast(properties.get(propertyKey));
+        return propertyKey.cast(properties.get(propertyKey));
     }
 
     public KeySet.Builder getKeySet() {
-	return this.keySet;
+        return this.keySet;
     }
 
     public boolean hasFlavorMetaData(Object key) {
-	return this.flavorMap.hasKey(key);
+        return this.flavorMap.hasKey(key);
     }
 
     public void setContainerType(Class<?> containerType) {
-	this.containerType = containerType;
+        this.containerType = containerType;
     }
 
     public String getName() {
-	return path.getName();
+        return path.getName();
     }
 
     public boolean hasKey(Object key) {
-	return keySet.contains(key);
+        return keySet.contains(key);
     }
 
     protected ParameterString toString(ParameterString sb) {
-	sb.append("name", path.getName());
-	sb.append("keys", keySet);
-	return sb;
+        sb.append("name", path.getName());
+        sb.append("keys", keySet);
+        return sb;
     }
 
     @Override
     public final String toString() {
-	return toString(new ParameterString(getClass().getSimpleName()))
-		.toString();
+        return toString(new ParameterString(getClass().getSimpleName())).toString();
     }
 
 }

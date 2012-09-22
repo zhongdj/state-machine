@@ -19,50 +19,48 @@ public class TransitionMetaDataImpl implements MetaData, TransitionMetaData {
     protected final DottedPath dottedPath;
     protected Method transitionMethod;
 
-    public TransitionMetaDataImpl(StateMachineMetaData<?, ?, ?> parent,
-	    String name, TransitionTypeEnum type, ITransition transition,
-	    long timeout) {
-	super();
-	this.parent = parent;
-	this.dottedPath = parent.getDottedPath().append(name);
-	this.type = type;
-	this.transition = transition;
-	this.timeout = timeout;
+    public TransitionMetaDataImpl(StateMachineMetaData<?, ?, ?> parent, String name, TransitionTypeEnum type, ITransition transition, long timeout) {
+        super();
+        this.parent = parent;
+        this.dottedPath = parent.getDottedPath().append(name);
+        this.type = type;
+        this.transition = transition;
+        this.timeout = timeout;
     }
 
     @Override
     public TransitionTypeEnum getType() {
-	return type;
+        return type;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public <T extends ITransition> T getTransition() {
-	return (T) transition;
+        return (T) transition;
     }
 
     @Override
     public long getTimeout() {
-	return timeout;
+        return timeout;
     }
 
     @Override
     public StateMachineMetaData<?, ?, ?> getParent() {
-	return parent;
+        return parent;
     }
 
     @Override
     public Method getTransitionMethod() {
-	return this.transitionMethod;
+        return this.transitionMethod;
     }
 
     public void setTransitionMethod(Method method) {
-	this.transitionMethod = method;
+        this.transitionMethod = method;
     }
 
     @Override
     public DottedPath getDottedPath() {
-	return dottedPath;
+        return dottedPath;
     }
 
     @Override
@@ -71,14 +69,13 @@ public class TransitionMetaDataImpl implements MetaData, TransitionMetaData {
 
     @Override
     public void dump(Dumper dumper) {
-	dumper.dump(toString());
+        dumper.dump(toString());
     }
 
     @Override
     public String toString() {
-	return "TransitionMetaDataImpl [dottedPath=" + dottedPath + ", type="
-		+ type + ", transition=" + transition + ", timeout=" + timeout
-		+ ", transitionMethod=" + transitionMethod + "]";
+        return "TransitionMetaDataImpl [dottedPath=" + dottedPath + ", type=" + type + ", transition=" + transition + ", timeout=" + timeout
+                + ", transitionMethod=" + transitionMethod + "]";
     }
 
 }

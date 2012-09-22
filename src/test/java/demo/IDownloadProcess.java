@@ -44,111 +44,109 @@ import demo.IDownloadProcess.TransitionEnum;
 public interface IDownloadProcess extends Serializable, IReactiveObject {
 
     public static enum TransitionEnum implements ITransition {
-	@Recover
-	@Timeout(3000L)
-	Activate, @Corrupt
-	@Timeout(3000L)
-	Inactivate, @Fail
-	@Timeout(3000L)
-	Err, Prepare, Start, Resume, Pause, Finish, Receive, @Redo
-	@Timeout(3000L)
-	Restart, Remove;
+        @Recover
+        @Timeout(3000L)
+        Activate, @Corrupt
+        @Timeout(3000L)
+        Inactivate, @Fail
+        @Timeout(3000L)
+        Err, Prepare, Start, Resume, Pause, Finish, Receive, @Redo
+        @Timeout(3000L)
+        Restart, Remove;
     }
 
     public static enum StateEnum implements IState<IDownloadProcess, StateEnum> {
-	@Initial
-	New(0, false, true), @Running(priority = 1)
-	Queued(1),
+        @Initial
+        New(0, false, true), @Running(priority = 1)
+        Queued(1),
 
-	@Running(priority = 0)
-	Started(2),
+        @Running(priority = 0)
+        Started(2),
 
-	@Corrupted
-	InactiveQueued(3), @Corrupted
-	InactiveStarted(4), @Stopped
-	Paused(5), @Stopped
-	Failed(6), @Stopped
-	Finished(7), @End
-	Removed(8, true);
+        @Corrupted
+        InactiveQueued(3), @Corrupted
+        InactiveStarted(4), @Stopped
+        Paused(5), @Stopped
+        Failed(6), @Stopped
+        Finished(7), @End
+        Removed(8, true);
 
-	static {
-	    New.transitionFunction.put(Prepare, Queued);
-	    New.transitionFunction.put(Remove, Removed);
+        static {
+            New.transitionFunction.put(Prepare, Queued);
+            New.transitionFunction.put(Remove, Removed);
 
-	    Queued.transitionFunction.put(Pause, Paused);
-	    Queued.transitionFunction.put(Start, Started);
-	    Queued.transitionFunction.put(Remove, Removed);
-	    Queued.transitionFunction.put(Inactivate, InactiveQueued);
+            Queued.transitionFunction.put(Pause, Paused);
+            Queued.transitionFunction.put(Start, Started);
+            Queued.transitionFunction.put(Remove, Removed);
+            Queued.transitionFunction.put(Inactivate, InactiveQueued);
 
-	    InactiveQueued.transitionFunction.put(Activate, Queued);
-	    InactiveQueued.transitionFunction.put(Remove, Removed);
+            InactiveQueued.transitionFunction.put(Activate, Queued);
+            InactiveQueued.transitionFunction.put(Remove, Removed);
 
-	    Started.transitionFunction.put(Pause, Paused);
-	    Started.transitionFunction.put(Receive, Started);
-	    Started.transitionFunction.put(Inactivate, InactiveStarted);
-	    Started.transitionFunction.put(Err, Failed);
-	    Started.transitionFunction.put(Finish, Finished);
-	    Started.transitionFunction.put(Remove, Removed);
+            Started.transitionFunction.put(Pause, Paused);
+            Started.transitionFunction.put(Receive, Started);
+            Started.transitionFunction.put(Inactivate, InactiveStarted);
+            Started.transitionFunction.put(Err, Failed);
+            Started.transitionFunction.put(Finish, Finished);
+            Started.transitionFunction.put(Remove, Removed);
 
-	    InactiveStarted.transitionFunction.put(Activate, Queued);
-	    InactiveStarted.transitionFunction.put(Remove, Removed);
+            InactiveStarted.transitionFunction.put(Activate, Queued);
+            InactiveStarted.transitionFunction.put(Remove, Removed);
 
-	    Paused.transitionFunction.put(Resume, New);
-	    Paused.transitionFunction.put(Restart, New);
-	    Paused.transitionFunction.put(Remove, Removed);
+            Paused.transitionFunction.put(Resume, New);
+            Paused.transitionFunction.put(Restart, New);
+            Paused.transitionFunction.put(Remove, Removed);
 
-	    Failed.transitionFunction.put(Resume, New);
-	    Failed.transitionFunction.put(Restart, New);
-	    Failed.transitionFunction.put(Remove, Removed);
+            Failed.transitionFunction.put(Resume, New);
+            Failed.transitionFunction.put(Restart, New);
+            Failed.transitionFunction.put(Remove, Removed);
 
-	    Finished.transitionFunction.put(Remove, Removed);
-	    Finished.transitionFunction.put(Restart, New);
-	}
+            Finished.transitionFunction.put(Remove, Removed);
+            Finished.transitionFunction.put(Restart, New);
+        }
 
-	final int seq;
-	final boolean end;
-	final boolean initial;
-	final HashMap<TransitionEnum, StateEnum> transitionFunction = new HashMap<TransitionEnum, StateEnum>();
+        final int seq;
+        final boolean end;
+        final boolean initial;
+        final HashMap<TransitionEnum, StateEnum> transitionFunction = new HashMap<TransitionEnum, StateEnum>();
 
-	private StateEnum(final int seq) {
-	    this(seq, false, false);
-	}
+        private StateEnum(final int seq) {
+            this(seq, false, false);
+        }
 
-	private StateEnum(final int seq, final boolean end) {
-	    this(seq, end, false);
-	}
+        private StateEnum(final int seq, final boolean end) {
+            this(seq, end, false);
+        }
 
-	private StateEnum(final int seq, final boolean end,
-		final boolean initial) {
-	    this.seq = seq;
-	    this.end = end;
-	    this.initial = initial;
-	}
+        private StateEnum(final int seq, final boolean end, final boolean initial) {
+            this.seq = seq;
+            this.end = end;
+            this.initial = initial;
+        }
 
-	@Override
-	public int seq() {
-	    return seq;
-	}
+        @Override
+        public int seq() {
+            return seq;
+        }
 
-	@Override
-	public Map<TransitionEnum, StateEnum> getTransitionFunction() {
-	    return Collections.unmodifiableMap(transitionFunction);
-	}
+        @Override
+        public Map<TransitionEnum, StateEnum> getTransitionFunction() {
+            return Collections.unmodifiableMap(transitionFunction);
+        }
 
-	@Override
-	public StateEnum doStateChange(
-		StateContext<IDownloadProcess, StateEnum> context) {
-	    if (!transitionFunction.containsKey(context.getCurrentState())) {
-		throw new IllegalStateChangeException(context);
-	    }
+        @Override
+        public StateEnum doStateChange(StateContext<IDownloadProcess, StateEnum> context) {
+            if (!transitionFunction.containsKey(context.getCurrentState())) {
+                throw new IllegalStateChangeException(context);
+            }
 
-	    return transitionFunction.get(context.getCurrentState());
-	}
+            return transitionFunction.get(context.getCurrentState());
+        }
 
-	@Override
-	public Set<TransitionEnum> getOutboundTransitions() {
-	    return transitionFunction.keySet();
-	}
+        @Override
+        public Set<TransitionEnum> getOutboundTransitions() {
+            return transitionFunction.keySet();
+        }
     }
 
     /**

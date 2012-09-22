@@ -29,15 +29,15 @@ public class StringPrintWriter extends PrintWriter {
      * Default constructor
      */
     public StringPrintWriter() {
-	this(new StringWriter());
+        this(new StringWriter());
     }
 
     /**
      * Constructor that wraps any arbitrary Writer.
      */
     public StringPrintWriter(Writer base) {
-	super(base);
-	this.base = base;
+        super(base);
+        this.base = base;
     }
 
     /**
@@ -47,7 +47,7 @@ public class StringPrintWriter extends PrintWriter {
      *         the default constructor
      */
     public Writer getBaseWriter() {
-	return this.base;
+        return this.base;
     }
 
     /**
@@ -57,6 +57,6 @@ public class StringPrintWriter extends PrintWriter {
      */
     @Override
     public String toString() {
-	return base.toString();
+        return base.toString();
     }
 }

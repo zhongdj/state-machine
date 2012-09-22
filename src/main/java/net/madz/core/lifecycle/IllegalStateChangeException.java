@@ -11,25 +11,25 @@ public class IllegalStateChangeException extends RuntimeException {
     private final int errorCode;
 
     public IllegalStateChangeException(StateContext<?, ?> context) {
-	this(context, ILLEAGLE_TRANSITION);
+        this(context, ILLEAGLE_TRANSITION);
     }
 
     public IllegalStateChangeException(StateContext<?, ?> context, int errorCode) {
 
-	try {
-	    this.context = (StateContext<?, ?>) context.clone();
-	    this.errorCode = errorCode;
-	} catch (CloneNotSupportedException e) {
-	    throw new IllegalStateException(e);
-	}
+        try {
+            this.context = (StateContext<?, ?>) context.clone();
+            this.errorCode = errorCode;
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     public StateContext<?, ?> getContext() {
-	return context;
+        return context;
     }
 
     public int getErrorCode() {
-	return errorCode;
+        return errorCode;
     }
 
 }

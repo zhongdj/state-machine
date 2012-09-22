@@ -6,6 +6,5 @@ public interface FlavorFactory {
      * 
      * @throws FlavorNotSupportedException
      */
-    public <T> T getFlavor(Class<T> flavorInterface, Object container)
-	    throws FlavorNotSupportedException;
+    public <T> T getFlavor(Class<T> flavorInterface, Object container) throws FlavorNotSupportedException;
 }

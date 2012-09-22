@@ -15,15 +15,15 @@ public enum JsonTextType {
     private final String beginString, endString;
 
     JsonTextType(String beginString, String endString) {
-	this.beginString = beginString;
-	this.endString = endString;
+        this.beginString = beginString;
+        this.endString = endString;
     }
 
     public String getBeginString() {
-	return this.beginString;
+        return this.beginString;
     }
 
     public String getEndString() {
-	return this.endString;
+        return this.endString;
     }
 }

@@ -15,65 +15,53 @@ import net.madz.core.lifecycle.meta.TransitionMetaDataBuilder;
 import net.madz.core.meta.impl.MetaDataBuilderBase;
 import net.madz.core.verification.VerificationFailureSet;
 
-public class TransitionMetaDataBuilderImpl extends
-	MetaDataBuilderBase<TransitionMetaData, StateMachineMetaData<?, ?, ?>>
-	implements TransitionMetaDataBuilder {
+public class TransitionMetaDataBuilderImpl extends MetaDataBuilderBase<TransitionMetaData, StateMachineMetaData<?, ?, ?>> implements TransitionMetaDataBuilder {
 
-    protected TransitionMetaDataBuilderImpl(
-	    StateMachineMetaData<?, ?, ?> parent, String name) {
-	super(parent, name);
+    protected TransitionMetaDataBuilderImpl(StateMachineMetaData<?, ?, ?> parent, String name) {
+        super(parent, name);
     }
 
     @Override
-    public TransitionMetaData build(StateMachineMetaData<?, ?, ?> parent,
-	    AnnotatedElement element) {
-	if (!(element instanceof Field)) {
-	    throw new IllegalArgumentException(
-		    "ONLY accept Field type element.");
-	}
+    public TransitionMetaData build(StateMachineMetaData<?, ?, ?> parent, AnnotatedElement element) {
+        if (!(element instanceof Field)) {
+            throw new IllegalArgumentException("ONLY accept Field type element.");
+        }
 
-	final Field transitionField = (Field) element;
+        final Field transitionField = (Field) element;
 
-	final TransitionTypeEnum type;
-	if (null != transitionField.getAnnotation(Corrupt.class)) {
-	    type = TransitionTypeEnum.Corrupt;
-	} else if (null != transitionField.getAnnotation(Recover.class)) {
-	    type = TransitionTypeEnum.Recover;
-	} else if (null != transitionField.getAnnotation(Redo.class)) {
-	    type = TransitionTypeEnum.Redo;
-	} else {
-	    type = TransitionTypeEnum.Other;
-	}
+        final TransitionTypeEnum type;
+        if (null != transitionField.getAnnotation(Corrupt.class)) {
+            type = TransitionTypeEnum.Corrupt;
+        } else if (null != transitionField.getAnnotation(Recover.class)) {
+            type = TransitionTypeEnum.Recover;
+        } else if (null != transitionField.getAnnotation(Redo.class)) {
+            type = TransitionTypeEnum.Redo;
+        } else {
+            type = TransitionTypeEnum.Other;
+        }
 
-	final Timeout timeoutAnnotation = transitionField
-		.getAnnotation(Timeout.class);
-	final long timeout;
-	if (null != timeoutAnnotation) {
-	    timeout = timeoutAnnotation.value();
-	} else {
-	    timeout = 30000L;
-	}
+        final Timeout timeoutAnnotation = transitionField.getAnnotation(Timeout.class);
+        final long timeout;
+        if (null != timeoutAnnotation) {
+            timeout = timeoutAnnotation.value();
+        } else {
+            timeout = 30000L;
+        }
 
-	final Class<?> transitionEnumClass = transitionField
-		.getDeclaringClass();
+        final Class<?> transitionEnumClass = transitionField.getDeclaringClass();
 
-	try {
-	    final ITransition transition = (ITransition) transitionField
-		    .get(transitionEnumClass);
-	    return new TransitionMetaDataImpl(parent, getName(), type,
-		    transition, timeout);
-	} catch (Exception ex) {
-	    throw new IllegalArgumentException(
-		    "Cannot get value from Enum Class:"
-			    + transitionEnumClass.getName() + " Field: "
-			    + transitionField.getName(), ex);
-	}
+        try {
+            final ITransition transition = (ITransition) transitionField.get(transitionEnumClass);
+            return new TransitionMetaDataImpl(parent, getName(), type, transition, timeout);
+        } catch (Exception ex) {
+            throw new IllegalArgumentException("Cannot get value from Enum Class:" + transitionEnumClass.getName() + " Field: " + transitionField.getName(), ex);
+        }
 
     }
 
     @Override
     public void verifyMetaData(VerificationFailureSet verificationSet) {
-	// TODO Auto-generated method stub
+        // TODO Auto-generated method stub
 
     }
 

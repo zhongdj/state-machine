@@ -3,6 +3,5 @@ package net.madz.core.meta;
 /**
  * MetaData flavor
  */
-public interface FlavorMetaData<OWNER extends MetaData> extends
-	MetaDataFilterable {
+public interface FlavorMetaData<OWNER extends MetaData> extends MetaDataFilterable {
 }

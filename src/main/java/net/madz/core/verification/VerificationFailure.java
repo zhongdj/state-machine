@@ -19,13 +19,13 @@ public class VerificationFailure implements Dumpable, Cloneable {
     private final StackTraceElement[] stack;
 
     public void writeJson(JsonWriter writer) throws IOException {
-	writer.startObject("Error");
-	try {
-	    writer.printString("code", errorKey.toString());
-	    writer.printString("message", getErrorMessage(null));
-	} finally {
-	    writer.endObject();
-	}
+        writer.startObject("Error");
+        try {
+            writer.printString("code", errorKey.toString());
+            writer.printString("message", getErrorMessage(null));
+        } finally {
+            writer.endObject();
+        }
     }
 
     /**
@@ -41,15 +41,13 @@ public class VerificationFailure implements Dumpable, Cloneable {
      * @param details
      *            Error parameters
      */
-    public VerificationFailure(Throwable cause, Object source, String errorKey,
-	    String defaultErrorMessage, Object... details) {
-	this.cause = cause;
-	this.source = source;
-	this.errorKey = source instanceof MetaData ? ((MetaData) source)
-		.getDottedPath().append(errorKey) : DottedPath.parse(errorKey);
-	this.defaultErrorMessage = defaultErrorMessage;
-	this.details = details;
-	this.stack = Thread.currentThread().getStackTrace();
+    public VerificationFailure(Throwable cause, Object source, String errorKey, String defaultErrorMessage, Object... details) {
+        this.cause = cause;
+        this.source = source;
+        this.errorKey = source instanceof MetaData ? ((MetaData) source).getDottedPath().append(errorKey) : DottedPath.parse(errorKey);
+        this.defaultErrorMessage = defaultErrorMessage;
+        this.details = details;
+        this.stack = Thread.currentThread().getStackTrace();
     }
 
     /**
@@ -65,76 +63,71 @@ public class VerificationFailure implements Dumpable, Cloneable {
      * @param details
      *            Error parameters
      */
-    public VerificationFailure(Object source, String errorKey,
-	    String defaultErrorMessage, Object... details) {
-	this(null, source, errorKey, defaultErrorMessage, details);
+    public VerificationFailure(Object source, String errorKey, String defaultErrorMessage, Object... details) {
+        this(null, source, errorKey, defaultErrorMessage, details);
     }
 
     /** Clone constructor */
     private VerificationFailure(VerificationFailure clone) {
-	this.cause = clone.cause;
-	this.source = clone.source;
-	this.errorKey = clone.errorKey;
-	this.defaultErrorMessage = clone.defaultErrorMessage;
-	this.details = clone.details;
-	this.stack = clone.stack;
+        this.cause = clone.cause;
+        this.source = clone.source;
+        this.errorKey = clone.errorKey;
+        this.defaultErrorMessage = clone.defaultErrorMessage;
+        this.details = clone.details;
+        this.stack = clone.stack;
     }
 
     @Override
     public VerificationFailure clone() {
-	return new VerificationFailure(this);
+        return new VerificationFailure(this);
     }
 
     /**
      * Meta data of object/field that is in error
      */
     public Object getSource() {
-	return this.source;
+        return this.source;
     }
 
     /**
      * Zuora error key for verification failure
      */
     public DottedPath getErrorKey() {
-	return this.errorKey;
+        return this.errorKey;
     }
 
     @Override
     public boolean equals(Object obj) {
-	if (obj instanceof VerificationFailure) {
-	    VerificationFailure comp = (VerificationFailure) obj;
-	    return comp.source.equals(this.source)
-		    && comp.errorKey.equals(this.errorKey);
-	}
-	return false;
+        if (obj instanceof VerificationFailure) {
+            VerificationFailure comp = (VerificationFailure) obj;
+            return comp.source.equals(this.source) && comp.errorKey.equals(this.errorKey);
+        }
+        return false;
     }
 
     @Override
     public int hashCode() {
-	return (source.hashCode() * 7) + errorKey.hashCode();
+        return (source.hashCode() * 7) + errorKey.hashCode();
     }
 
     @Override
     public String toString() {
-	return errorKey + "(" + String.format(defaultErrorMessage, details)
-		+ ")";
+        return errorKey + "(" + String.format(defaultErrorMessage, details) + ")";
     }
 
     public String getErrorMessage(String overrideErrorMessage) {
-	return String.format(MetaDataUtil.coalesce(overrideErrorMessage,
-		defaultErrorMessage), details);
+        return String.format(MetaDataUtil.coalesce(overrideErrorMessage, defaultErrorMessage), details);
     }
 
     @Override
     public void dump(Dumper dumper) {
-	dumper.print(errorKey).print(": ")
-		.println(String.format(defaultErrorMessage, details));
-	if (null != cause) {
-	    StringPrintWriter str = new StringPrintWriter();
-	    this.cause.printStackTrace(str);
-	    dumper.indent().println(str);
-	} else {
-	    dumper.indent().dump(stack);
-	}
+        dumper.print(errorKey).print(": ").println(String.format(defaultErrorMessage, details));
+        if (null != cause) {
+            StringPrintWriter str = new StringPrintWriter();
+            this.cause.printStackTrace(str);
+            dumper.indent().println(str);
+        } else {
+            dumper.indent().dump(stack);
+        }
     }
 }

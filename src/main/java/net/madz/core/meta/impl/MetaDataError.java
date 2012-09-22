@@ -30,26 +30,26 @@ public class MetaDataError<M extends MetaData> implements FlavorMetaData<M> {
 
     @Override
     public KeySet getKeySet() {
-	return KEY_SET;
+        return KEY_SET;
     }
 
     /**
      * Add an error to the error list
      */
     public void addError(Throwable e) {
-	// Flatten exceptions caused by reflection
-	while (e instanceof InvocationTargetException) {
-	    e = ((InvocationTargetException) e).getTargetException();
-	}
+        // Flatten exceptions caused by reflection
+        while (e instanceof InvocationTargetException) {
+            e = ((InvocationTargetException) e).getTargetException();
+        }
 
-	if (e instanceof IllegalStateException) {
-	    errors.add(e.getMessage());
-	} else {
-	    ByteArrayOutputStream out = new ByteArrayOutputStream();
-	    PrintStream pout = new PrintStream(out);
-	    e.printStackTrace(pout);
-	    errors.add(out.toString());
-	}
+        if (e instanceof IllegalStateException) {
+            errors.add(e.getMessage());
+        } else {
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            PrintStream pout = new PrintStream(out);
+            e.printStackTrace(pout);
+            errors.add(out.toString());
+        }
     }
 
     /**
@@ -58,18 +58,17 @@ public class MetaDataError<M extends MetaData> implements FlavorMetaData<M> {
      * @return List of all error strings
      */
     public List<String> getErrors() {
-	return Collections.unmodifiableList(this.errors);
+        return Collections.unmodifiableList(this.errors);
     }
 
     @Override
     public String toString() {
-	return "Errors" + errors;
+        return "Errors" + errors;
     }
 
     @Override
-    public MetaDataError<M> filter(MetaData owner, MetaDataFilter filter,
-	    boolean lazyFilter) {
-	return this;
+    public MetaDataError<M> filter(MetaData owner, MetaDataFilter filter, boolean lazyFilter) {
+        return this;
     }
 
 }

@@ -31,17 +31,17 @@ public interface MetaDataFilter {
     public DottedPath getFilteredName(Object metaData, DottedPath path);
 
     public final static MetaDataFilter NULL_FILTER = new MetaDataFilter() {
-	public boolean canInclude(Object metaData) {
-	    return true;
-	}
+        public boolean canInclude(Object metaData) {
+            return true;
+        }
 
-	public DottedPath getFilteredName(Object metaData, DottedPath path) {
-	    return path;
-	}
+        public DottedPath getFilteredName(Object metaData, DottedPath path) {
+            return path;
+        }
 
-	public String toString() {
-	    return "NullFilter";
-	}
+        public String toString() {
+            return "NullFilter";
+        }
 
     };
 
@@ -49,54 +49,54 @@ public interface MetaDataFilter {
      * Simple MetaDataFilter that chains together multiple filters
      */
     public static class MetaDataFilterSet implements MetaDataFilter {
-	private final MetaDataFilter[] filters;
+        private final MetaDataFilter[] filters;
 
-	/**
-	 * Constructor
-	 */
-	public MetaDataFilterSet(MetaDataFilter... filters) {
-	    this.filters = filters;
-	}
+        /**
+         * Constructor
+         */
+        public MetaDataFilterSet(MetaDataFilter... filters) {
+            this.filters = filters;
+        }
 
-	@Override
-	public boolean canInclude(final Object metaData) {
-	    for (MetaDataFilter filter : filters) {
-		if (!filter.canInclude(metaData)) {
-		    return false;
-		}
-	    }
-	    return true;
-	}
+        @Override
+        public boolean canInclude(final Object metaData) {
+            for (MetaDataFilter filter : filters) {
+                if (!filter.canInclude(metaData)) {
+                    return false;
+                }
+            }
+            return true;
+        }
 
-	public DottedPath getFilteredName(Object metaData, DottedPath path) {
-	    for (MetaDataFilter filter : filters) {
-		path = filter.getFilteredName(metaData, path);
-	    }
-	    return path;
-	}
+        public DottedPath getFilteredName(Object metaData, DottedPath path) {
+            for (MetaDataFilter filter : filters) {
+                path = filter.getFilteredName(metaData, path);
+            }
+            return path;
+        }
 
-	@Override
-	public int hashCode() {
-	    int hashCode = 0;
-	    for (MetaDataFilter filter : filters) {
-		hashCode = (hashCode * 3) + filter.hashCode();
-	    }
-	    return hashCode;
-	}
+        @Override
+        public int hashCode() {
+            int hashCode = 0;
+            for (MetaDataFilter filter : filters) {
+                hashCode = (hashCode * 3) + filter.hashCode();
+            }
+            return hashCode;
+        }
 
-	@Override
-	public String toString() {
-	    final StringBuilder sb = new StringBuilder(filters.length * 23);
-	    boolean first = true;
-	    for (MetaDataFilter filter : filters) {
-		if (!first)
-		    sb.append("->");
-		else
-		    first = false;
-		sb.append(filter);
-	    }
+        @Override
+        public String toString() {
+            final StringBuilder sb = new StringBuilder(filters.length * 23);
+            boolean first = true;
+            for (MetaDataFilter filter : filters) {
+                if (!first)
+                    sb.append("->");
+                else
+                    first = false;
+                sb.append(filter);
+            }
 
-	    return "Filters[" + sb.toString() + "]";
-	}
+            return "Filters[" + sb.toString() + "]";
+        }
     }
 }

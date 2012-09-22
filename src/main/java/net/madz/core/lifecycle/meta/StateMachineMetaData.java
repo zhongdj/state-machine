@@ -6,8 +6,7 @@ import net.madz.core.lifecycle.IState;
 import net.madz.core.lifecycle.ITransition;
 import net.madz.core.meta.MetaData;
 
-public interface StateMachineMetaData<R extends IReactiveObject, S extends IState<R, S>, T extends ITransition>
-	extends MetaData, Dumpable {
+public interface StateMachineMetaData<R extends IReactiveObject, S extends IState<R, S>, T extends ITransition> extends MetaData, Dumpable {
 
     void addFinalState(StateMetaData<R, S> finalState);
 

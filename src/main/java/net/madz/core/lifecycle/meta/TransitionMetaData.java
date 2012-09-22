@@ -9,7 +9,7 @@ import net.madz.core.meta.MetaData;
 public interface TransitionMetaData extends MetaData, Dumpable {
 
     public static enum TransitionTypeEnum {
-	Corrupt, Recover, Redo, Other
+        Corrupt, Recover, Redo, Other
     }
 
     TransitionTypeEnum getType();
