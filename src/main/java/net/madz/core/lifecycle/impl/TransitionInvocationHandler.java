@@ -2,6 +2,11 @@ package net.madz.core.lifecycle.impl;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.log4j.Logger;
 
 import net.madz.core.lifecycle.IReactiveObject;
 import net.madz.core.lifecycle.IState;
@@ -11,6 +16,7 @@ import net.madz.core.lifecycle.annotations.StateMachine;
 import net.madz.core.lifecycle.annotations.Transition;
 import net.madz.core.lifecycle.meta.StateMachineMetaData;
 import net.madz.core.lifecycle.meta.StateMetaData;
+import net.madz.core.lifecycle.meta.TransitionMetaData;
 import net.madz.core.lifecycle.meta.impl.StateMachineMetaDataBuilderImpl;
 import net.madz.core.util.StringUtil;
 
@@ -24,7 +30,7 @@ public class TransitionInvocationHandler<R extends IReactiveObject, S extends IS
     }
 
     @Override
-    public Object invoke(Object object, Method method, Object[] args) throws Throwable {
+    public Object invoke(final Object object, final Method method, final Object[] args) throws Throwable {
         StateMachineMetaData<R, S, T> stateMachineMetaData = findStateMachineMetaData();
         S state = reactiveObject.getState();
         StateMetaData<R, S> stateMetaData = stateMachineMetaData.getStateMetaData(state);
@@ -39,7 +45,8 @@ public class TransitionInvocationHandler<R extends IReactiveObject, S extends IS
         } else {
             transitionName = transition.value();
         }
-        T transitionEnum = stateMachineMetaData.getTransition(transitionName);
+        final T transitionEnum = stateMachineMetaData.getTransition(transitionName);
+        final TransitionMetaData transitionMetaData = stateMachineMetaData.getTransitionMetaData(transitionEnum);
 
         if (stateMetaData.illegalTransition(transitionEnum)) {
             throw new IllegalStateException("Cannot transit from State:" + stateMetaData.getDottedPath().getName() + " via Transition: " + transitionName);
@@ -50,15 +57,29 @@ public class TransitionInvocationHandler<R extends IReactiveObject, S extends IS
 
         intercept(context);
 
+        final FutureTask<Object> task = new FutureTask<Object>(new Callable<Object>() {
+
+            @Override
+            public Object call() throws Exception {
+                final Object result = method.invoke(reactiveObject, args);
+                return result;
+            }
+        });
+        final Thread t = new Thread(task);
+        t.start();
         try {
-            Object result = method.invoke(reactiveObject, args);
-            return result;
-        } finally {
-            Method stateSetter = reactiveObject.getClass().getDeclaredMethod("setState", new Class[] { nextState.getClass() });
+            final Object result = task.get(transitionMetaData.getTimeout(), TimeUnit.MILLISECONDS);
+
+            final Method stateSetter = reactiveObject.getClass().getDeclaredMethod("setState", new Class[] { nextState.getClass() });
             stateSetter.setAccessible(true);
             stateSetter.invoke(reactiveObject, nextState);
             stateSetter.setAccessible(false);
             notify(context);
+
+            return result;
+        } catch (Exception ex) {
+            Logger.getLogger(getClass()).error("Failed to process transition: " + transition, ex);
+            throw ex;
         }
     }
 
