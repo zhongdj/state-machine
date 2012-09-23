@@ -21,8 +21,6 @@ import java.util.Set;
 import net.madz.core.lifecycle.IReactiveObject;
 import net.madz.core.lifecycle.IState;
 import net.madz.core.lifecycle.ITransition;
-import net.madz.core.lifecycle.IllegalStateChangeException;
-import net.madz.core.lifecycle.StateContext;
 import net.madz.core.lifecycle.annotations.StateMachine;
 import net.madz.core.lifecycle.annotations.StateSet;
 import net.madz.core.lifecycle.annotations.Transition;
@@ -72,7 +70,6 @@ public interface IDownloadProcess extends Serializable, IReactiveObject {
         Queued(1),
         @Running
         Started(2),
-<<<<<<< HEAD
         @Corrupted(recoverPriority = 1)
         InactiveQueued(3),
         @Corrupted(recoverPriority = 0)
@@ -84,15 +81,6 @@ public interface IDownloadProcess extends Serializable, IReactiveObject {
         @Stopped
         Finished(7),
         @End
-=======
-
-        @Corrupted(recoverPriority = 1)
-        InactiveQueued(3), @Corrupted(recoverPriority = 0)
-        InactiveStarted(4), @Stopped
-        Paused(5), @Stopped
-        Failed(6), @Stopped
-        Finished(7), @End
->>>>>>> Remove IState.doStateChange
         Removed(8, true);
 
         static {
@@ -146,17 +134,6 @@ public interface IDownloadProcess extends Serializable, IReactiveObject {
         }
 
         @Override
-<<<<<<< HEAD
-        public StateEnum doStateChange(StateContext<IDownloadProcess, StateEnum> context) {
-            if ( !transitionFunction.containsKey(context.getCurrentState()) ) {
-                throw new IllegalStateChangeException(context);
-            }
-            return transitionFunction.get(context.getCurrentState());
-        }
-
-        @Override
-=======
->>>>>>> Remove IState.doStateChange
         public Set<TransitionEnum> getOutboundTransitions() {
             return transitionFunction.keySet();
         }
