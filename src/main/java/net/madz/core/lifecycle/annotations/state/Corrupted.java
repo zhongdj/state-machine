@@ -5,5 +5,12 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Corrupted {
+<<<<<<< HEAD
     int recoverPriority() default 0;
 }
+=======
+
+    int recoverPriority();
+
+}
+>>>>>>> Remove IState.doStateChange

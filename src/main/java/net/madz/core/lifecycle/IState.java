@@ -23,11 +23,8 @@ import java.util.Set;
 @SuppressWarnings("rawtypes")
 public interface IState<R extends IReactiveObject, SELF extends IState> {
 
-    int seq();
-
     Map<? extends ITransition, SELF> getTransitionFunction();
 
-    SELF doStateChange(StateContext<R, SELF> context);
 
     Set<? extends ITransition> getOutboundTransitions();
 }

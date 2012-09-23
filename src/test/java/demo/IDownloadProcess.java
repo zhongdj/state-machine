@@ -72,6 +72,7 @@ public interface IDownloadProcess extends Serializable, IReactiveObject {
         Queued(1),
         @Running
         Started(2),
+<<<<<<< HEAD
         @Corrupted(recoverPriority = 1)
         InactiveQueued(3),
         @Corrupted(recoverPriority = 0)
@@ -83,6 +84,15 @@ public interface IDownloadProcess extends Serializable, IReactiveObject {
         @Stopped
         Finished(7),
         @End
+=======
+
+        @Corrupted(recoverPriority = 1)
+        InactiveQueued(3), @Corrupted(recoverPriority = 0)
+        InactiveStarted(4), @Stopped
+        Paused(5), @Stopped
+        Failed(6), @Stopped
+        Finished(7), @End
+>>>>>>> Remove IState.doStateChange
         Removed(8, true);
 
         static {
@@ -131,16 +141,12 @@ public interface IDownloadProcess extends Serializable, IReactiveObject {
         }
 
         @Override
-        public int seq() {
-            return seq;
-        }
-
-        @Override
         public Map<TransitionEnum, StateEnum> getTransitionFunction() {
             return Collections.unmodifiableMap(transitionFunction);
         }
 
         @Override
+<<<<<<< HEAD
         public StateEnum doStateChange(StateContext<IDownloadProcess, StateEnum> context) {
             if ( !transitionFunction.containsKey(context.getCurrentState()) ) {
                 throw new IllegalStateChangeException(context);
@@ -149,6 +155,8 @@ public interface IDownloadProcess extends Serializable, IReactiveObject {
         }
 
         @Override
+=======
+>>>>>>> Remove IState.doStateChange
         public Set<TransitionEnum> getOutboundTransitions() {
             return transitionFunction.keySet();
         }
