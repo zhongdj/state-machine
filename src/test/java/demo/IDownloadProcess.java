@@ -46,29 +46,49 @@ public interface IDownloadProcess extends Serializable, IReactiveObject {
     public static enum TransitionEnum implements ITransition {
         @Recover
         @Timeout(3000L)
-        Activate, @Corrupt
+        Activate,
+
+        @Corrupt
         @Timeout(3000L)
-        Inactivate, @Fail
+        Inactivate,
+
+        @Fail
         @Timeout(3000L)
-        Err, Prepare, Start, Resume, Pause, Finish, Receive, @Redo
+        Err,
+
+        Prepare, Start, Resume, Pause, Finish, Receive,
+
+        @Redo
         @Timeout(3000L)
         Restart, Remove;
     }
 
     public static enum StateEnum implements IState<IDownloadProcess, StateEnum> {
         @Initial
-        New(0, false, true), @Running(priority = 1)
+        New(0, false, true),
+
+        @Running
         Queued(1),
 
-        @Running(priority = 0)
+        @Running
         Started(2),
 
-        @Corrupted
-        InactiveQueued(3), @Corrupted
-        InactiveStarted(4), @Stopped
-        Paused(5), @Stopped
-        Failed(6), @Stopped
-        Finished(7), @End
+        @Corrupted(recoverPriority = 1)
+        InactiveQueued(3),
+
+        @Corrupted(recoverPriority = 0)
+        InactiveStarted(4),
+
+        @Stopped
+        Paused(5),
+
+        @Stopped
+        Failed(6),
+
+        @Stopped
+        Finished(7),
+
+        @End
         Removed(8, true);
 
         static {
@@ -226,6 +246,7 @@ public interface IDownloadProcess extends Serializable, IReactiveObject {
     @Transition
     void remove(boolean both);
 
+    @SuppressWarnings("unchecked")
     StateEnum getState();
 
     int getId();
