@@ -1,4 +1,4 @@
-package com.zuora.core.common;
+package net.madz.core.common;
 
 import junit.framework.TestCase;
 import net.madz.core.common.DottedPath;
