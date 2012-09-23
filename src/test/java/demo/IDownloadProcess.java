@@ -47,84 +47,70 @@ public interface IDownloadProcess extends Serializable, IReactiveObject {
         @Recover
         @Timeout(3000L)
         Activate,
-
         @Corrupt
         @Timeout(3000L)
         Inactivate,
-
         @Fail
         @Timeout(3000L)
         Err,
-
-        Prepare, Start, Resume, Pause, Finish, Receive,
-
+        Prepare,
+        Start,
+        Resume,
+        Pause,
+        Finish,
+        Receive,
         @Redo
         @Timeout(3000L)
-        Restart, Remove;
+        Restart,
+        Remove;
     }
 
     public static enum StateEnum implements IState<IDownloadProcess, StateEnum> {
         @Initial
         New(0, false, true),
-
         @Running
         Queued(1),
-
         @Running
         Started(2),
-
         @Corrupted(recoverPriority = 1)
         InactiveQueued(3),
-
         @Corrupted(recoverPriority = 0)
         InactiveStarted(4),
-
         @Stopped
         Paused(5),
-
         @Stopped
         Failed(6),
-
         @Stopped
         Finished(7),
-
         @End
         Removed(8, true);
 
         static {
             New.transitionFunction.put(Prepare, Queued);
             New.transitionFunction.put(Remove, Removed);
-
             Queued.transitionFunction.put(Pause, Paused);
             Queued.transitionFunction.put(Start, Started);
             Queued.transitionFunction.put(Remove, Removed);
             Queued.transitionFunction.put(Inactivate, InactiveQueued);
-
             InactiveQueued.transitionFunction.put(Activate, Queued);
             InactiveQueued.transitionFunction.put(Remove, Removed);
-
             Started.transitionFunction.put(Pause, Paused);
             Started.transitionFunction.put(Receive, Started);
             Started.transitionFunction.put(Inactivate, InactiveStarted);
             Started.transitionFunction.put(Err, Failed);
             Started.transitionFunction.put(Finish, Finished);
             Started.transitionFunction.put(Remove, Removed);
-
             InactiveStarted.transitionFunction.put(Activate, Queued);
             InactiveStarted.transitionFunction.put(Remove, Removed);
-
             Paused.transitionFunction.put(Resume, New);
             Paused.transitionFunction.put(Restart, New);
             Paused.transitionFunction.put(Remove, Removed);
-
             Failed.transitionFunction.put(Resume, New);
             Failed.transitionFunction.put(Restart, New);
             Failed.transitionFunction.put(Remove, Removed);
-
             Finished.transitionFunction.put(Remove, Removed);
             Finished.transitionFunction.put(Restart, New);
         }
-
         final int seq;
         final boolean end;
         final boolean initial;
@@ -156,10 +142,9 @@ public interface IDownloadProcess extends Serializable, IReactiveObject {
 
         @Override
         public StateEnum doStateChange(StateContext<IDownloadProcess, StateEnum> context) {
-            if (!transitionFunction.containsKey(context.getCurrentState())) {
+            if ( !transitionFunction.containsKey(context.getCurrentState()) ) {
                 throw new IllegalStateChangeException(context);
             }
-
             return transitionFunction.get(context.getCurrentState());
         }
 
