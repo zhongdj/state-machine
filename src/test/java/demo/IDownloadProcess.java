@@ -66,10 +66,78 @@ public interface IDownloadProcess extends Serializable, IReactiveObject {
     }
 
     public static enum StateEnum implements IState<IDownloadProcess, StateEnum> {
+        /**
+         * Preconditions: 
+         * 
+         * 1. Request Validation Passed
+         * 
+         * 1.1 URL Format legal
+         *  
+         * 1.2 File Path legal
+         *   
+         * 1.2.1 File does not exist
+         * 
+         * 1.2.2 File can be created (write) under it's directory
+         * 
+         * 1.2.2.1 File's directory (exists and can be written OR does not exist but can be created under it's parent directory)
+         * 
+         * Postconditions:
+         * 
+         * 1. Download Task Meta-data file is created.
+         * 
+         * 2. URL, Folder, filename, thread number, state = "New" are stored in the Meta-data file.
+         */
         @Initial
         New(0, false, true),
+        
+        /**
+         * Preconditions:
+         *
+         * 1. Download Task Meta-data file exists.
+         * 
+         * 2. Meta-information in the meta-data file are properly set.
+         * 
+         * 2.1. URL format is legal.
+         * 
+         * 2.2.Folder and filename is legal, as defined in New.Postconditions.
+         * 
+         * 2.3.Thread Number is greater than 0 and less than 20
+         * 
+         * 2.4.State is set legally (New, Inactive)
+         *  
+         * Postconditions:
+         * 
+         * 1. Following information should be reset and set within the meta-data file. 
+         * 
+         * 1.1. Total length is set
+         * 
+         * 1.2. resumable is set
+         * 
+         * 1.3. segments number is set
+         * 
+         * 1.4. state is set to "Prepared".
+         * 
+         * 2. Download Task data file is created 
+         *    or re-created with deleting the pre-existing file (application aborted before update status to Prepared).
+         */ 
         @Running
         Queued(1),
+        
+        /**
+         * Preconditions:
+         * 
+         * 1. All necessary meta information had been set, as is mentioned above, such as: total length, resumable flag and etc. 
+         * 
+         * 2. Target data file is created.
+         * 
+         * Postconditions:
+         * 
+         * 1. Resources required by down load had been allocated to this downloadProcess.
+         * 
+         * 1.1. Download Worker Threads (stands for IO/CPU/MEM/NETWORK) 
+         * 
+         * 2.Download Task State is set to Started.
+         */
         @Running
         Started(2),
         @Corrupted(recoverPriority = 1)
