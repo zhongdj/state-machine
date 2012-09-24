@@ -1,16 +1,6 @@
 package demo;
 
-import static demo.IDownloadProcess.TransitionEnum.Activate;
-import static demo.IDownloadProcess.TransitionEnum.Err;
-import static demo.IDownloadProcess.TransitionEnum.Finish;
-import static demo.IDownloadProcess.TransitionEnum.Inactivate;
-import static demo.IDownloadProcess.TransitionEnum.Pause;
-import static demo.IDownloadProcess.TransitionEnum.Prepare;
-import static demo.IDownloadProcess.TransitionEnum.Receive;
-import static demo.IDownloadProcess.TransitionEnum.Remove;
-import static demo.IDownloadProcess.TransitionEnum.Restart;
-import static demo.IDownloadProcess.TransitionEnum.Resume;
-import static demo.IDownloadProcess.TransitionEnum.Start;
+
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -37,6 +27,18 @@ import net.madz.core.lifecycle.annotations.state.Running;
 import net.madz.core.lifecycle.annotations.state.Stopped;
 import demo.IDownloadProcess.StateEnum;
 import demo.IDownloadProcess.TransitionEnum;
+
+import static demo.IDownloadProcess.TransitionEnum.Activate;
+import static demo.IDownloadProcess.TransitionEnum.Err;
+import static demo.IDownloadProcess.TransitionEnum.Finish;
+import static demo.IDownloadProcess.TransitionEnum.Inactivate;
+import static demo.IDownloadProcess.TransitionEnum.Pause;
+import static demo.IDownloadProcess.TransitionEnum.Prepare;
+import static demo.IDownloadProcess.TransitionEnum.Receive;
+import static demo.IDownloadProcess.TransitionEnum.Remove;
+import static demo.IDownloadProcess.TransitionEnum.Restart;
+import static demo.IDownloadProcess.TransitionEnum.Resume;
+import static demo.IDownloadProcess.TransitionEnum.Start;
 
 @StateMachine(states = @StateSet(StateEnum.class), transitions = @TransitionSet(TransitionEnum.class))
 public interface IDownloadProcess extends Serializable, IReactiveObject {
