@@ -1,12 +1,12 @@
 package net.madz.core.common;
 
+import net.madz.core.util.StringPrintWriter;
+
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import net.madz.core.util.StringPrintWriter;
 
 public final class Dumper {
     private static final String INDENT = "   ";
@@ -15,7 +15,6 @@ public final class Dumper {
     private final String indent;
     private boolean beginningOfLine = true;
 
-    private Dumper parent;
     private Dumper child;
 
     public Dumper() {
@@ -27,32 +26,23 @@ public final class Dumper {
     }
 
     public Dumper(PrintWriter pw) {
-        this(pw, "", null);
+        this(pw, "");
     }
 
-    private Dumper(PrintWriter pw, String indent, Dumper parent) {
+    private Dumper(PrintWriter pw, String indent) {
         this.pw = pw;
         this.indent = indent;
-        this.parent = parent;
     }
 
     public Dumper indent() {
         return push();
     }
 
-    public Dumper undent() {
-        return pop();
-    }
-
     public Dumper push() {
         if (child == null) {
-            child = new Dumper(pw, indent + INDENT, this);
+            child = new Dumper(pw, indent + INDENT);
         }
         return child;
-    }
-
-    public Dumper pop() {
-        return parent != null ? parent : this;
     }
 
     public Dumper print(Object o) {
@@ -77,14 +67,6 @@ public final class Dumper {
     public Dumper println(Object o) {
         print(o);
         return println();
-    }
-
-    public Dumper printf(String format, Object... values) {
-        return print(String.format(format, values));
-    }
-
-    public Dumper printfln(String format, Object... values) {
-        return println(String.format(format, values));
     }
 
     public Dumper dump(Map<?, ?> map) {
@@ -144,9 +126,5 @@ public final class Dumper {
             return new Dumper().dump(obj).toString();
         }
         return null;
-    }
-
-    public String getIndentString() {
-        return indent;
     }
 }
