@@ -1,6 +1,6 @@
 package net.madz.core.event;
 
-public interface ILifeCycleEventListenter {
+public interface ILifeCycleEventListener {
 
     void onLifeCycleEvent(LifeCycleEvent event);
 }

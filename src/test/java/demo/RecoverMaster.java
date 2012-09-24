@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import net.madz.core.event.ILifeCycleEventListenter;
+import net.madz.core.event.ILifeCycleEventListener;
 import net.madz.core.event.LifeCycleEvent;
 import net.madz.core.lifecycle.impl.TransitionInvocationHandler;
 import net.madz.core.lifecycle.meta.StateMachineMetaData;
@@ -16,7 +16,7 @@ import net.madz.core.verification.VerificationFailureSet;
 import demo.IDownloadProcess.StateEnum;
 import demo.IDownloadProcess.TransitionEnum;
 
-public class RecoverMaster implements ILifeCycleEventListenter {
+public class RecoverMaster implements ILifeCycleEventListener {
 
     public static final Logger LOGGER = Logger.getLogger(RecoverMaster.class.getName());
     final StateMachineMetaData<IDownloadProcess, StateEnum, TransitionEnum> machineMetaData = buildStateMachineMetaData();
