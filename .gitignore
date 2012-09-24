@@ -1,14 +1,9 @@
 
 *.class
 
-bin/.DS_Store
-
-bin/net/madz/.DS_Store
-
-bin/net/madz/core/.DS_Store
-
-bin/net/madz/core/lifecycle/.DS_Store
-
-bin/net/madz/core/lifecycle/meta/.DS_Store
+/**/.DS_Store
 
 *.svn-base
+
+target
+
