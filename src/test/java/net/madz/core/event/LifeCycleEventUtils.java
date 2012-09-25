@@ -6,14 +6,14 @@ import java.util.logging.Logger;
 
 public abstract class LifeCycleEventUtils {
 
-    private static final ArrayList<ILifeCycleEventListener> LISTENERs = new ArrayList<ILifeCycleEventListener>();
+    private static final ArrayList<ILifeCycleEventListener> listeners = new ArrayList<ILifeCycleEventListener>();
 
     static {
         LifeCycleEventListeners annotation = LifeCycleEvent.class.getAnnotation(LifeCycleEventListeners.class);
         Class<? extends ILifeCycleEventListener>[] listenerClasses = annotation.value();
         for (Class<? extends ILifeCycleEventListener> listenerClass : listenerClasses) {
             try {
-                LISTENERs.add(listenerClass.newInstance());
+                listeners.add(listenerClass.newInstance());
             } catch (Exception e) {
                 Logger.getAnonymousLogger().log(Level.SEVERE, "Failed to create instance of class: " + listenerClass.getName(), e);
             }
@@ -21,7 +21,7 @@ public abstract class LifeCycleEventUtils {
     }
 
     public static void notify(LifeCycleEvent event) {
-        for (ILifeCycleEventListener listener : LISTENERs) {
+        for (ILifeCycleEventListener listener : listeners) {
             listener.onLifeCycleEvent(event);
         }
     }
