@@ -11,26 +11,18 @@ import java.util.Map.Entry;
 public final class Dumper {
     private static final String INDENT = "   ";
 
-    private final PrintWriter pw;
+    private StringBuilder sb;
     private final String indent;
     private boolean beginningOfLine = true;
 
     private Dumper child;
 
     public Dumper() {
-        this(new StringPrintWriter());
+        this("", new StringBuilder());
     }
 
-    public Dumper(OutputStream out) {
-        this(new PrintWriter(out, true));
-    }
-
-    public Dumper(PrintWriter pw) {
-        this(pw, "");
-    }
-
-    private Dumper(PrintWriter pw, String indent) {
-        this.pw = pw;
+    private Dumper(String indent, StringBuilder sb) {
+        this.sb = sb;
         this.indent = indent;
     }
 
@@ -40,26 +32,26 @@ public final class Dumper {
 
     public Dumper push() {
         if (child == null) {
-            child = new Dumper(pw, indent + INDENT);
+            child = new Dumper(indent + INDENT, sb);
         }
         return child;
     }
 
     public Dumper print(Object o) {
         if (beginningOfLine) {
-            pw.print(indent);
+            sb.append(indent);
         }
         if (null == o) {
-            pw.print("null");
+            sb.append("null");
         } else {
-            pw.print(o);
+            sb.append(o);
         }
         beginningOfLine = false;
         return this;
     }
 
     public Dumper println() {
-        pw.println();
+        sb.append("\n");
         beginningOfLine = true;
         return this;
     }
@@ -114,8 +106,9 @@ public final class Dumper {
         return this;
     }
 
+    @Override
     public String toString() {
-        return pw.toString();
+        return sb.toString();
     }
 
     /**

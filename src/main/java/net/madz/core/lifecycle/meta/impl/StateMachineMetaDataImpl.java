@@ -1,10 +1,7 @@
 package net.madz.core.lifecycle.meta.impl;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import net.madz.core.common.DottedPath;
 import net.madz.core.common.Dumper;
@@ -180,8 +177,8 @@ public class StateMachineMetaDataImpl<R extends IReactiveObject, S extends IStat
 
     public ParameterString toString(ParameterString sb) {
         sb.append("name", this.dottedPath.getAbsoluteName());
-        sb.append("states", this.stateIndexMap);
-        sb.append("transition", this.transitionIndexMap);
+        sb.append("states", new TreeMap(this.stateIndexMap));
+        sb.append("transition", new TreeMap(this.transitionIndexMap));
         return sb;
     }
 
