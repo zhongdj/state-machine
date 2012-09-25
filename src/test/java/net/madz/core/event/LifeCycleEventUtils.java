@@ -1,19 +1,20 @@
 package net.madz.core.event;
 
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.google.common.eventbus.EventBus;
+
 public abstract class LifeCycleEventUtils {
 
-    private static final ArrayList<ILifeCycleEventListener> listeners = new ArrayList<ILifeCycleEventListener>();
-
+    private static final EventBus bus = new EventBus();
+    
     static {
-        LifeCycleEventListeners annotation = LifeCycleEvent.class.getAnnotation(LifeCycleEventListeners.class);
+        final LifeCycleEventListeners annotation = LifeCycleEvent.class.getAnnotation(LifeCycleEventListeners.class);
         Class<? extends ILifeCycleEventListener>[] listenerClasses = annotation.value();
-        for (Class<? extends ILifeCycleEventListener> listenerClass : listenerClasses) {
+        for ( Class<? extends ILifeCycleEventListener> listenerClass : listenerClasses ) {
             try {
-                listeners.add(listenerClass.newInstance());
+                bus.register(listenerClass.newInstance());
             } catch (Exception e) {
                 Logger.getAnonymousLogger().log(Level.SEVERE, "Failed to create instance of class: " + listenerClass.getName(), e);
             }
@@ -21,8 +22,6 @@ public abstract class LifeCycleEventUtils {
     }
 
     public static void notify(LifeCycleEvent event) {
-        for (ILifeCycleEventListener listener : listeners) {
-            listener.onLifeCycleEvent(event);
-        }
+        bus.post(event);
     }
 }

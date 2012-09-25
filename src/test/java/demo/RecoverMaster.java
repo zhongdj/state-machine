@@ -13,6 +13,9 @@ import net.madz.core.lifecycle.meta.StateMetaData;
 import net.madz.core.lifecycle.meta.TransitionMetaData;
 import net.madz.core.lifecycle.meta.impl.StateMachineMetaDataBuilderImpl;
 import net.madz.core.verification.VerificationFailureSet;
+
+import com.google.common.eventbus.Subscribe;
+
 import demo.IDownloadProcess.StateEnum;
 import demo.IDownloadProcess.TransitionEnum;
 
@@ -28,10 +31,10 @@ public class RecoverMaster implements ILifeCycleEventListener {
         case INIT_EVENT:
             break;
         case STARTUP_EVENT:
-            corrupt();
+            corrupt(event);
             break;
         case READY:
-            recover();
+            recover(event);
             break;
         case SHUTDOWN_EVENT:
             break;
@@ -41,7 +44,11 @@ public class RecoverMaster implements ILifeCycleEventListener {
 
     }
 
-    private void recover() {
+    @Subscribe
+    public void recover(LifeCycleEvent event) {
+        if (event != LifeCycleEvent.READY) {
+            return;
+        }
         final DownloadProcessRecoverableIterator iterator = new DownloadProcessRecoverableIterator(machineMetaData);
         final ArrayList<IDownloadProcess> allDownloadProcess = new ArrayList<IDownloadProcess>();
         IDownloadProcess downloadProcess = null;
@@ -67,8 +74,11 @@ public class RecoverMaster implements ILifeCycleEventListener {
         StoreHelper.save(allDownloadProcess);
     }
 
-    void corrupt() {
-
+    @Subscribe
+    public void corrupt(LifeCycleEvent event) {
+        if (event != LifeCycleEvent.STARTUP_EVENT) {
+            return;
+        }
         final DownloadProcessRecoverableIterator iterator = new DownloadProcessRecoverableIterator(machineMetaData);
         IDownloadProcess downloadProcess = null;
         final ArrayList<IDownloadProcess> allDownloadProcess = new ArrayList<IDownloadProcess>();
