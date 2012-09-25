@@ -1,33 +1,48 @@
 package net.madz.core.common;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
+
+import java.util.*;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 /**
  * Represents a hierarchical name in which each level is separated by a dot.
  * This class is loosely modeled after java.io.File
  */
 public class DottedPath implements Iterable<DottedPath> {
-    private final DottedPath parent;
+    private final Optional<DottedPath> parent;
     private final String name, absoluteName;
-
-    private DottedPath(DottedPath parent, String name) {
-        this.parent = parent;
-        this.name = name;
-        this.absoluteName = this.parent != null ? this.parent.absoluteName + "." + this.name : this.name;
-    }
+    private List<String> paths;
 
     /** Constructor */
     public DottedPath(String name) {
-        this(null, name);
+        this(Optional.<DottedPath>absent(), name);
+    }
+
+    private DottedPath(Optional<DottedPath> parent, String name) {
+        this.parent = parent;
+        this.name = name;
+        this.absoluteName = this.parent.isPresent() ? this.parent.get().absoluteName + "." + this.name : this.name;
+
+        this.paths = makePaths();
+    }
+
+    private List<String> makePaths() {
+        if (!this.parent.isPresent()) return newArrayList(this.name);
+
+        List<String> paths = newArrayList(this.parent.get().paths);
+        paths.add(this.name);
+
+        return paths;
     }
 
     public static DottedPath parse(String path) {
         List<String> segments = Arrays.asList(path.split("\\."));
         DottedPath head = new DottedPath(segments.get(0));
         List<String> tail = segments.subList(1, segments.size());
+
         return head.append(tail);
     }
 
@@ -36,7 +51,7 @@ public class DottedPath implements Iterable<DottedPath> {
     }
 
     public DottedPath append(String segment) {
-        return new DottedPath(this, segment);
+        return new DottedPath(Optional.of(this), segment);
     }
 
     public DottedPath append(List<String> segments) {
@@ -46,30 +61,6 @@ public class DottedPath implements Iterable<DottedPath> {
 
         return this.append(segments.get(0)).append(segments.subList(1, segments.size()));
     }
-
-    // /** Recursive constructor used to build chain */
-    // DottedPath(DottedPath chainParent, String seperator, String name) {
-    // if (null == seperator) {
-    // this.parent = chainParent;
-    // this.name = name;
-    // }
-    // else {
-    // int sep = name.lastIndexOf(seperator);
-    // if (sep == -1) {
-    // this.parent = chainParent;
-    // this.name = name;
-    // }
-    // else {
-    // this.name = name.substring(sep + seperator.length());
-    // this.parent = new DottedPath(chainParent, seperator, name.substring(0,
-    // sep));
-    // }
-    // }
-    //
-    // if (null != this.parent) this.absoluteName =
-    // this.parent.getAbsoluteName() + seperator + this.name;
-    // else this.absoluteName = this.name;
-    // }
 
     @Override
     public boolean equals(Object obj) {
@@ -85,23 +76,16 @@ public class DottedPath implements Iterable<DottedPath> {
      * Number of elements from the head element to this element
      */
     public int size() {
-        return parent != null ? parent.size() + 1 : 1;
+        return parent.isPresent() ? parent.get().size() + 1 : 1;
     }
 
-    public List<String> toSegmentList() {
-        List<String> segmentList = new LinkedList<String>();
-        for (DottedPath current = this; current != null; current = current.parent) {
-            segmentList.add(0, current.name);
-        }
-        return segmentList;
-    }
+    private List<DottedPath> toList() {
+        if (!this.parent.isPresent()) return newArrayList(this);
 
-    public List<DottedPath> toList() {
-        List<DottedPath> list = new LinkedList<DottedPath>();
-        for (DottedPath current = this; current != null; current = current.parent) {
-            list.add(0, current);
-        }
-        return list;
+        ArrayList<DottedPath> dottedPaths = newArrayList(this.parent.get().toList());
+        dottedPaths.add(this);
+
+        return dottedPaths;
     }
 
     @Override
@@ -112,7 +96,7 @@ public class DottedPath implements Iterable<DottedPath> {
     /**
      * Parent element in path
      */
-    public DottedPath getParent() {
+    public Optional<DottedPath> getParent() {
         return this.parent;
     }
 
@@ -135,32 +119,13 @@ public class DottedPath implements Iterable<DottedPath> {
     /**
      * Absolute name of this path using the specified separator.
      * 
-     * @param sb
-     *            StringBuilder to append to, or null to create a newly and
-     *            properly sized StringBuilder
+     *
      * @param separator
      *            String to append between each path level
      * @return StringBuilder passed in or created
      */
     public StringBuilder toString(StringBuilder sb, final String separator) {
-        if (null == sb) {
-            int size = 0;
-            for (DottedPath path = this; path != null; path = path.parent) {
-                if (path != this) {
-                    size += separator.length();
-                }
-                size += path.name.length();
-            }
-
-            sb = new StringBuilder(size);
-        }
-
-        if (null != this.parent) {
-            this.parent.toString(sb, separator);
-            sb.append(separator);
-        }
-        sb.append(this.name);
-        return sb;
+        return sb.append(Joiner.on(separator).join(paths));
     }
 
     /**
