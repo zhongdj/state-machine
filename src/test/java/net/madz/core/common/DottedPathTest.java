@@ -1,36 +1,40 @@
 package net.madz.core.common;
 
-import junit.framework.TestCase;
-import net.madz.core.common.DottedPath;
-
 import org.junit.Test;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
 
 public class DottedPathTest {
 
     @Test
-    public void testBaseFunctionality() {
-        String str = null;
-        DottedPath path = null;
+    public void should_know_dotted_path_details_for_one_level() {
+        DottedPath path = DottedPath.parse("a");
+        assertThat(path.size(), is(1));
+        assertThat(path.getAbsoluteName(), is("a"));
+        assertThat(path.getName(), is("a"));
+    }
 
-        // Build up
-        for (char ch = 'a'; ch <= 'l'; ch++) {
-            if (null == str)
-                str = Character.toString(ch);
-            else
-                str = str + "." + ch;
+    @Test
+    public void should_know_the_parent_of_one_level_is_empty() {
+        DottedPath path = DottedPath.parse("a");
+        assertThat(path.getParent().isPresent(), is(Boolean.FALSE));
+    }
 
-            path = DottedPath.parse(str);
-            TestCase.assertEquals("Absolute path build up", path.getAbsoluteName(), str);
-            TestCase.assertEquals("Local path", path.getName(), Character.toString(ch));
-        }
+    @Test
+    public void should_know_dotted_path_details_for_two_levels() {
+        DottedPath path = DottedPath.parse("a.b");
+        assertThat(path.size(), is(2));
+        assertThat(path.getName(), is("b"));
+        assertThat(path.getAbsoluteName(), is("a.b"));
+    }
 
-        // Tear down
-        while (null != path) {
-            TestCase.assertEquals("Abosolute path tear down", path.getAbsoluteName(), str);
-            path = path.getParent();
-            if (null != path) {
-                str = str.substring(0, str.lastIndexOf('.'));
-            }
-        }
+    @Test
+    public void should_know_dotted_path_details_for_multiple_levels() {
+        DottedPath path = DottedPath.parse("a.b.c.d");
+        assertThat(path.size(), is(4));
+        assertThat(path.getName(), is("d"));
+        assertThat(path.getAbsoluteName(), is("a.b.c.d"));
+        assertThat(path.getParent().get().getAbsoluteName(), is("a.b.c"));
     }
 }
