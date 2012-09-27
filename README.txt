@@ -2,7 +2,7 @@ State Machine is a classical methodology for modeling reactive object's life cyc
 
 Actually everyone is dealing with life cycle in everyday, of course including programming.
 
-A well defined life cycle will help to build a strong life, which brings benifits like: 
+A well defined life cycle will help to build a strong life, which brings benefits like: 
 
 1.Behaviors happening in desired order to keep consistent with designed.
 2.Good support for reactive metrics, especially relating to different states.
