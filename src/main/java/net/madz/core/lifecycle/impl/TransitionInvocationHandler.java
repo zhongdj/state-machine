@@ -32,54 +32,49 @@ public class TransitionInvocationHandler<R extends IReactiveObject, S extends IS
     @Override
     public Object invoke(final Object object, final Method method, final Object[] args) throws Throwable {
         StateMachineMetaData<R, S, T> stateMachineMetaData = findStateMachineMetaData();
-        S state = reactiveObject.getState();
-        StateMetaData<R, S> stateMetaData = stateMachineMetaData.getStateMetaData(state);
-
-        final String transitionName;
-        final Transition transition = method.getAnnotation(Transition.class);
-        if (null == transition) {
-            return method.invoke(reactiveObject, args);
-        }
-        if (Transition.NULL.equals(transition.value())) {
-            transitionName = StringUtil.toUppercaseFirstCharacter(method.getName());
-        } else {
-            transitionName = transition.value();
-        }
-        final T transitionEnum = stateMachineMetaData.getTransition(transitionName);
-        final TransitionMetaData transitionMetaData = stateMachineMetaData.getTransitionMetaData(transitionEnum);
-
-        if (stateMetaData.illegalTransition(transitionEnum)) {
-            throw new IllegalStateException("Cannot transit from State:" + stateMetaData.getDottedPath().getName() + " via Transition: " + transitionName);
-        }
-
-        final S nextState = stateMetaData.nextState(transitionEnum);
-        final StateContext<R, S> context = new StateContext<R, S>(reactiveObject, nextState, transitionEnum);
-
-        intercept(context);
-
-        final FutureTask<Object> task = new FutureTask<Object>(new Callable<Object>() {
-
-            @Override
-            public Object call() throws Exception {
-                final Object result = method.invoke(reactiveObject, args);
-                return result;
+        synchronized (reactiveObject) {
+            S state = reactiveObject.getState();
+            StateMetaData<R, S> stateMetaData = stateMachineMetaData.getStateMetaData(state);
+            final String transitionName;
+            final Transition transition = method.getAnnotation(Transition.class);
+            if ( null == transition ) {
+                return method.invoke(reactiveObject, args);
             }
-        });
-        final Thread t = new Thread(task);
-        t.start();
-        try {
-            final Object result = task.get(transitionMetaData.getTimeout(), TimeUnit.MILLISECONDS);
+            if ( Transition.NULL.equals(transition.value()) ) {
+                transitionName = StringUtil.toUppercaseFirstCharacter(method.getName());
+            } else {
+                transitionName = transition.value();
+            }
+            final T transitionEnum = stateMachineMetaData.getTransition(transitionName);
+            final TransitionMetaData transitionMetaData = stateMachineMetaData.getTransitionMetaData(transitionEnum);
+            if ( stateMetaData.illegalTransition(transitionEnum) ) {
+                throw new IllegalStateException("Cannot transit from State:" + stateMetaData.getDottedPath().getName() + " via Transition: " + transitionName);
+            }
+            final S nextState = stateMetaData.nextState(transitionEnum);
+            final StateContext<R, S> context = new StateContext<R, S>(reactiveObject, nextState, transitionEnum);
+            intercept(context);
+            final FutureTask<Object> task = new FutureTask<Object>(new Callable<Object>() {
 
-            final Method stateSetter = reactiveObject.getClass().getDeclaredMethod("setState", new Class[] { nextState.getClass() });
-            stateSetter.setAccessible(true);
-            stateSetter.invoke(reactiveObject, nextState);
-            stateSetter.setAccessible(false);
-            notify(context);
-
-            return result;
-        } catch (Exception ex) {
-            Logger.getLogger(getClass()).error("Failed to process transition: " + transition, ex);
-            throw ex;
+                @Override
+                public Object call() throws Exception {
+                    final Object result = method.invoke(reactiveObject, args);
+                    return result;
+                }
+            });
+            final Thread t = new Thread(task);
+            t.start();
+            try {
+                final Object result = task.get(transitionMetaData.getTimeout(), TimeUnit.MILLISECONDS);
+                final Method stateSetter = reactiveObject.getClass().getDeclaredMethod("setState", new Class[] { nextState.getClass() });
+                stateSetter.setAccessible(true);
+                stateSetter.invoke(reactiveObject, nextState);
+                stateSetter.setAccessible(false);
+                notify(context);
+                return result;
+            } catch (Exception ex) {
+                Logger.getLogger(getClass()).error("Failed to process transition: " + transition, ex);
+                throw ex;
+            }
         }
     }
 
@@ -89,26 +84,24 @@ public class TransitionInvocationHandler<R extends IReactiveObject, S extends IS
 
     private void notify(StateContext<R, S> context) {
         try {
-
         } catch (Throwable ignored) {
         }
-
     }
 
     @SuppressWarnings("unchecked")
     private StateMachineMetaData<R, S, T> findStateMachineMetaData() {
         final Class<? extends IReactiveObject> reactiveClass = reactiveObject.getClass();
         Class<? extends IReactiveObject> stateMachineClass = null;
-        for (Class<?> interfaze : reactiveClass.getInterfaces()) {
+        for ( Class<?> interfaze : reactiveClass.getInterfaces() ) {
             StateMachine annotation = (StateMachine) interfaze.getAnnotation(StateMachine.class);
-            if (null == annotation) {
+            if ( null == annotation ) {
                 continue;
             } else {
                 stateMachineClass = (Class<? extends IReactiveObject>) interfaze;
                 break;
             }
         }
-        if (null == stateMachineClass) {
+        if ( null == stateMachineClass ) {
             throw new IllegalStateException("Cannot find stateMachineClass through interfaces of Class: " + reactiveClass.getName());
         }
         final StateMachineMetaDataBuilderImpl builder = new StateMachineMetaDataBuilderImpl(null, "StateMachine");
