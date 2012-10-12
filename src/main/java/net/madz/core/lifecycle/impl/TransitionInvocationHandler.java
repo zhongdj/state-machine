@@ -57,14 +57,20 @@ public class TransitionInvocationHandler<R extends IReactiveObject, S extends IS
 
                 @Override
                 public Object call() throws Exception {
-                    final Object result = method.invoke(reactiveObject, args);
-                    return result;
+                    synchronized (reactiveObject) {
+                        final Object result = method.invoke(reactiveObject, args);
+                        reactiveObject.notify();
+                        return result;
+                    }
                 }
             });
+            
+            
             final Thread t = new Thread(task);
             t.start();
+            reactiveObject.wait(transitionMetaData.getTimeout() / 2);
             try {
-                final Object result = task.get(transitionMetaData.getTimeout(), TimeUnit.MILLISECONDS);
+                final Object result = task.get(transitionMetaData.getTimeout() / 2, TimeUnit.MILLISECONDS);
                 final Method stateSetter = reactiveObject.getClass().getDeclaredMethod("setState", new Class[] { nextState.getClass() });
                 stateSetter.setAccessible(true);
                 stateSetter.invoke(reactiveObject, nextState);
