@@ -6,8 +6,6 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
-
 import net.madz.core.lifecycle.IReactiveObject;
 import net.madz.core.lifecycle.IState;
 import net.madz.core.lifecycle.ITransition;
@@ -19,6 +17,8 @@ import net.madz.core.lifecycle.meta.StateMetaData;
 import net.madz.core.lifecycle.meta.TransitionMetaData;
 import net.madz.core.lifecycle.meta.impl.StateMachineMetaDataBuilderImpl;
 import net.madz.core.util.StringUtil;
+
+import org.apache.log4j.Logger;
 
 public class TransitionInvocationHandler<R extends IReactiveObject, S extends IState<R, S>, T extends ITransition> implements InvocationHandler {
 
@@ -51,7 +51,7 @@ public class TransitionInvocationHandler<R extends IReactiveObject, S extends IS
                 throw new IllegalStateException("Cannot transit from State:" + stateMetaData.getDottedPath().getName() + " via Transition: " + transitionName);
             }
             final S nextState = stateMetaData.nextState(transitionEnum);
-            final StateContext<R, S> context = new StateContext<R, S>(reactiveObject, nextState, transitionEnum);
+            final StateContext<R, S> context = new StateContext<R, S>(reactiveObject, nextState, transitionEnum, args);
             intercept(context);
             final FutureTask<Object> task = new FutureTask<Object>(new Callable<Object>() {
 
@@ -82,8 +82,9 @@ public class TransitionInvocationHandler<R extends IReactiveObject, S extends IS
         InterceptorHub.INSTANCE.intercept(context);
     }
 
-    private void notify(StateContext<R, S> context) {
+    private void notify(final StateContext<R, S> context) {
         try {
+            StateChangeListenerHub.INSTANCE.notify(context);
         } catch (Throwable ignored) {
         }
     }

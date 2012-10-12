@@ -6,17 +6,18 @@ import java.io.Serializable;
 public final class StateContext<R extends IReactiveObject, S extends IState> implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
-
     private final R reactiveObject;
     private final S currentState;
     private final S nextState;
     private final ITransition transition;
+    private final Object[] transitionArgs;
 
-    public StateContext(R reactiveObject, S nextState, ITransition ongoingTransition) {
+    public StateContext(R reactiveObject, S nextState, ITransition ongoingTransition, Object[] transitionArgs) {
         this.reactiveObject = reactiveObject;
         this.currentState = this.reactiveObject.getState();
         this.nextState = nextState;
         this.transition = ongoingTransition;
+        this.transitionArgs = transitionArgs;
     }
 
     public S getCurrentState() {
@@ -35,9 +36,12 @@ public final class StateContext<R extends IReactiveObject, S extends IState> imp
         return transition;
     }
 
+    public Object[] getTransitionArgs() {
+        return transitionArgs;
+    }
+
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
-
 }

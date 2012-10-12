@@ -177,8 +177,8 @@ public class StateMachineMetaDataImpl<R extends IReactiveObject, S extends IStat
 
     public ParameterString toString(ParameterString sb) {
         sb.append("name", this.dottedPath.getAbsoluteName());
-        sb.append("states", new TreeMap(this.stateIndexMap));
-        sb.append("transition", new TreeMap(this.transitionIndexMap));
+        sb.append("states", new TreeMap<S, StateMetaData<R, S>>(this.stateIndexMap));
+        sb.append("transition", new TreeMap<Object, TransitionMetaData>(this.transitionIndexMap));
         return sb;
     }
 
