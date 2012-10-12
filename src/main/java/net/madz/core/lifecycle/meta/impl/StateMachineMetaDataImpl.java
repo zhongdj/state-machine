@@ -13,7 +13,10 @@ import net.madz.core.lifecycle.meta.StateMachineMetaData;
 import net.madz.core.lifecycle.meta.StateMetaData;
 import net.madz.core.lifecycle.meta.StateMetaData.StateTypeEnum;
 import net.madz.core.lifecycle.meta.TransitionMetaData;
+import net.madz.core.meta.KeySet;
 import net.madz.core.meta.MetaData;
+import net.madz.core.meta.MetaDataFilter;
+import net.madz.core.meta.MetaDataFilterable;
 import net.madz.core.verification.VerificationFailureSet;
 
 public class StateMachineMetaDataImpl<R extends IReactiveObject, S extends IState<R, S>, T extends ITransition> implements MetaData,
@@ -36,6 +39,7 @@ public class StateMachineMetaDataImpl<R extends IReactiveObject, S extends IStat
     protected final HashMap<ITransition, TransitionMetaData> transitionIndexMap = new HashMap<ITransition, TransitionMetaData>();
     protected final MetaData parent;
     protected final DottedPath dottedPath;
+    protected final KeySet keySet;
 
     public StateMachineMetaDataImpl(MetaData parent, Class<R> reactiveObjectClass, Class<S> stateEnumClass) {
 
@@ -48,6 +52,7 @@ public class StateMachineMetaDataImpl<R extends IReactiveObject, S extends IStat
         }
         this.reactiveObjectClass = reactiveObjectClass;
         this.stateEnumClass = stateEnumClass;
+        this.keySet = new KeySet(this.dottedPath.getAbsoluteName());
     }
 
     public Class<T> getTransitionEnumClass() {
@@ -234,6 +239,16 @@ public class StateMachineMetaDataImpl<R extends IReactiveObject, S extends IStat
             }
         }
         return result.toArray(new StateMetaData[result.size()]);
+    }
+
+    @Override
+    public MetaDataFilterable filter(MetaData parent, MetaDataFilter filter, boolean lazyFilter) {
+        return this;
+    }
+
+    @Override
+    public KeySet getKeySet() {
+        return this.keySet;
     }
 
 }

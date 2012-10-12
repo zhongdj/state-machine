@@ -41,7 +41,6 @@ public class RecoverMaster implements ILifeCycleEventListener {
         case TERMINATION_EVENT:
             break;
         }
-
     }
 
     @Subscribe
