@@ -64,20 +64,17 @@ public class TransitionInvocationHandler<R extends IReactiveObject, S extends IS
                     }
                 }
             });
-            
-            
             final Thread t = new Thread(task);
             t.start();
             reactiveObject.wait(transitionMetaData.getTimeout() / 2);
             try {
                 final Object result = task.get(transitionMetaData.getTimeout() / 2, TimeUnit.MILLISECONDS);
-                if (context.getCurrentState() == nextState) {
-                    return result;
+                if ( context.getCurrentState() != nextState ) {
+                    final Method stateSetter = reactiveObject.getClass().getDeclaredMethod("setState", new Class[] { nextState.getClass() });
+                    stateSetter.setAccessible(true);
+                    stateSetter.invoke(reactiveObject, nextState);
+                    stateSetter.setAccessible(false);
                 }
-                final Method stateSetter = reactiveObject.getClass().getDeclaredMethod("setState", new Class[] { nextState.getClass() });
-                stateSetter.setAccessible(true);
-                stateSetter.invoke(reactiveObject, nextState);
-                stateSetter.setAccessible(false);
                 notify(context);
                 return result;
             } catch (Exception ex) {
