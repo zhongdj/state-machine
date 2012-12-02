@@ -71,6 +71,9 @@ public class TransitionInvocationHandler<R extends IReactiveObject, S extends IS
             reactiveObject.wait(transitionMetaData.getTimeout() / 2);
             try {
                 final Object result = task.get(transitionMetaData.getTimeout() / 2, TimeUnit.MILLISECONDS);
+                if (context.getCurrentState() == nextState) {
+                    return result;
+                }
                 final Method stateSetter = reactiveObject.getClass().getDeclaredMethod("setState", new Class[] { nextState.getClass() });
                 stateSetter.setAccessible(true);
                 stateSetter.invoke(reactiveObject, nextState);
