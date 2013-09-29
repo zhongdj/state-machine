@@ -7,12 +7,12 @@ import java.util.logging.Logger;
 
 import net.madz.core.event.ILifeCycleEventListener;
 import net.madz.core.event.LifeCycleEvent;
-import net.madz.core.lifecycle.impl.TransitionInvocationHandler;
-import net.madz.core.lifecycle.meta.StateMachineMetaData;
-import net.madz.core.lifecycle.meta.StateMetaData;
-import net.madz.core.lifecycle.meta.TransitionMetaData;
-import net.madz.core.lifecycle.meta.impl.StateMachineMetaDataBuilderImpl;
-import net.madz.core.verification.VerificationFailureSet;
+import net.madz.lifecycle.impl.TransitionInvocationHandler;
+import net.madz.lifecycle.meta.StateMachineMetaData;
+import net.madz.lifecycle.meta.StateMetaData;
+import net.madz.lifecycle.meta.TransitionMetaData;
+import net.madz.lifecycle.meta.impl.StateMachineMetaDataBuilderImpl;
+import net.madz.verification.VerificationFailureSet;
 
 import com.google.common.eventbus.Subscribe;
 

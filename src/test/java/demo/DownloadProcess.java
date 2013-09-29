@@ -8,7 +8,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import net.madz.core.lifecycle.IReactiveObject;
+import net.madz.lifecycle.IReactiveObject;
 
 public class DownloadProcess implements IDownloadProcess, IReactiveObject {
 

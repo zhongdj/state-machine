@@ -1,5 +1,7 @@
 package net.madz.core.common;
 
+import net.madz.common.DottedPath;
+
 import org.junit.Test;
 
 import static org.hamcrest.core.Is.is;

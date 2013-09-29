@@ -5,13 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import junit.framework.Assert;
-import net.madz.core.common.Dumper;
+import net.madz.common.Dumper;
 import net.madz.core.event.LifeCycleEvent;
 import net.madz.core.event.LifeCycleEventUtils;
-import net.madz.core.lifecycle.impl.TransitionInvocationHandler;
-import net.madz.core.lifecycle.meta.StateMachineMetaData;
-import net.madz.core.lifecycle.meta.impl.StateMachineMetaDataBuilderImpl;
-import net.madz.core.verification.VerificationFailureSet;
+import net.madz.lifecycle.impl.TransitionInvocationHandler;
+import net.madz.lifecycle.meta.StateMachineMetaData;
+import net.madz.lifecycle.meta.impl.StateMachineMetaDataBuilderImpl;
+import net.madz.verification.VerificationFailureSet;
 import demo.DownloadProcess.DownloadRequest;
 import demo.IDownloadProcess.StateEnum;
 import demo.IDownloadProcess.TransitionEnum;

@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import net.madz.core.lifecycle.IRecoverableIterator;
-import net.madz.core.lifecycle.meta.StateMachineMetaData;
+import net.madz.lifecycle.IRecoverableIterator;
+import net.madz.lifecycle.meta.StateMachineMetaData;
 import demo.IDownloadProcess.StateEnum;
 import demo.IDownloadProcess.TransitionEnum;
 
